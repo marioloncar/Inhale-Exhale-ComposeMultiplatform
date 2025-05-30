@@ -1,7 +1,8 @@
-package com.autogenie.autogenie
+package com.autogenie.autogenic
 
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.window.ComposeViewport
+import com.autogenie.autogenic.App
 import kotlinx.browser.document
 
 @OptIn(ExperimentalComposeUiApi::class)

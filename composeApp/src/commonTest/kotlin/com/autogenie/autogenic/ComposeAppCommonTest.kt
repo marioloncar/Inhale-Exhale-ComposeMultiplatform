@@ -1,4 +1,4 @@
-package com.autogenie.autogenie
+package com.autogenie.autogenic
 
 import kotlin.test.Test
 import kotlin.test.assertEquals

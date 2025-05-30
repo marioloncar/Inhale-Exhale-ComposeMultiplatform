@@ -1,4 +1,4 @@
-package com.autogenie.autogenie
+package com.autogenie.autogenic
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
