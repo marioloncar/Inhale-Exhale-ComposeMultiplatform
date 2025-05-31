@@ -19,7 +19,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen() {
+fun HomeScreen(onExerciseClick: (String) -> Unit) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -58,7 +58,9 @@ fun HomeScreen() {
                 contentPadding = PaddingValues(bottom = 32.dp)
             ) {
                 items(5) { index ->
-                    Exercise(title = "Exercise ${index + 1}")
+                    Exercise(title = "Exercise ${index + 1}", onClick = {
+                        onExerciseClick((index + 1).toString())
+                    })
                 }
             }
         }
@@ -66,11 +68,12 @@ fun HomeScreen() {
 }
 
 @Composable
-fun Exercise(title: String) {
+fun Exercise(title: String, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .width(140.dp)
-            .height(120.dp),
+            .height(120.dp)
+            .clickable { onClick() },
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Box(
@@ -125,13 +128,13 @@ fun SectionTitle(title: String) {
 @Preview
 @Composable
 fun HomeScreenPreview() {
-    HomeScreen()
+    HomeScreen(onExerciseClick = {})
 }
 
 @Preview
 @Composable
 fun ExercisePreview() {
-    Exercise(title = "Push-ups")
+    Exercise(title = "Push-ups", onClick = {})
 }
 
 @Preview
