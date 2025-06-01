@@ -34,7 +34,6 @@ fun ExerciseScreen(exerciseId: String) {
     var showInstructions by remember { mutableStateOf(false) }
     var currentInstructionIndex by remember { mutableStateOf(0) }
 
-    // Breathing cycle
     LaunchedEffect(Unit) {
         repeat(2) { // 12 seconds, toggling every 6s
             delay(6000)

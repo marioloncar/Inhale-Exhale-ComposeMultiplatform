@@ -5,21 +5,32 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Book
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.autogenie.autogenic.AppContainer
+import com.autogenie.autogenic.feature.home.HomeViewModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(onExerciseClick: (String) -> Unit) {
+fun HomeScreen(
+    viewModel: HomeViewModel,
+    onExerciseClick: (String) -> Unit
+) {
+
+    val uiState by viewModel.uiState.collectAsState()
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -57,18 +68,37 @@ fun HomeScreen(onExerciseClick: (String) -> Unit) {
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 contentPadding = PaddingValues(bottom = 32.dp)
             ) {
-                items(5) { index ->
-                    Exercise(title = "Exercise ${index + 1}", onClick = {
-                        onExerciseClick((index + 1).toString())
-                    })
+                items(uiState.trainings) { training ->
+                    Exercise(
+                        title = training.name,
+                        color = training.color.toColor(),
+                        onClick = { onExerciseClick(training.id) }
+                    )
                 }
             }
         }
     }
 }
 
+fun String.toColor(): Color {
+    val hex = this.removePrefix("#")
+    val colorLong = when (hex.length) {
+        6 -> "FF$hex".toLong(16)
+        8 -> hex.toLong(16)
+        else -> throw IllegalArgumentException("Invalid color format: $this")
+    }
+    return Color(colorLong)
+}
+
 @Composable
-fun Exercise(title: String, onClick: () -> Unit) {
+fun Exercise(title: String, color: Color, onClick: () -> Unit) {
+    val gradient = Brush.linearGradient(
+        colors = listOf(
+            color.copy(alpha = 1.0f),
+            color.copy(alpha = 0.3f)
+        )
+    )
+
     Card(
         modifier = Modifier
             .width(140.dp)
@@ -77,8 +107,8 @@ fun Exercise(title: String, onClick: () -> Unit) {
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
+            modifier = Modifier.fillMaxSize().background(gradient),
+            contentAlignment = Alignment.Center,
         ) {
             Text(text = title)
         }
@@ -128,13 +158,13 @@ fun SectionTitle(title: String) {
 @Preview
 @Composable
 fun HomeScreenPreview() {
-    HomeScreen(onExerciseClick = {})
+    HomeScreen(viewModel = HomeViewModel(AppContainer.trainingsRepository), onExerciseClick = {})
 }
 
 @Preview
 @Composable
 fun ExercisePreview() {
-    Exercise(title = "Push-ups", onClick = {})
+    Exercise(title = "Push-ups", color = Color.Red, onClick = {})
 }
 
 @Preview
