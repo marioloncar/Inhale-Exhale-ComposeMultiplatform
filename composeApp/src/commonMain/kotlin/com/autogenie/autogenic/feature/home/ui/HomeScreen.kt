@@ -29,6 +29,7 @@ fun HomeScreen(
     viewModel: HomeViewModel,
     onExerciseClick: (String) -> Unit,
     onSettingsClick: () -> Unit,
+    onGetStartedClick: () -> Unit,
 ) {
 
     val uiState by viewModel.uiState.collectAsState()
@@ -62,9 +63,7 @@ fun HomeScreen(
         ) {
             GetStartedBanner(
                 title = "Get Started",
-                onClick = {
-                    // Navigate to Learn screen
-                }
+                onClick = onGetStartedClick
             )
 
             SectionTitle(title = "Exercises")
@@ -171,6 +170,7 @@ fun HomeScreenPreview() {
     HomeScreen(
         viewModel = HomeViewModel(AppContainer.observeTrainingsUseCase),
         onExerciseClick = {},
-        onSettingsClick = {}
+        onSettingsClick = {},
+        onGetStartedClick = {}
     )
 }

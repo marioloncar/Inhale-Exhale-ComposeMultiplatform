@@ -12,6 +12,7 @@ import com.autogenie.autogenic.feature.home.HomeViewModel
 import com.autogenie.autogenic.feature.home.ui.HomeScreen
 import com.autogenie.autogenic.feature.settings.SettingsViewModel
 import com.autogenie.autogenic.feature.settings.ui.SettingsScreen
+import com.autogenie.autogenic.feature.tutorial.ui.TutorialScreen
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -43,7 +44,8 @@ fun AppNavigation() {
             HomeScreen(
                 viewModel = homeViewModel,
                 onExerciseClick = { id -> navController.navigate("exercise/$id") },
-                onSettingsClick = { navController.navigate("settings") }
+                onSettingsClick = { navController.navigate("settings") },
+                onGetStartedClick = { navController.navigate("tutorial") },
             )
         }
 
@@ -61,6 +63,10 @@ fun AppNavigation() {
             SettingsScreen(
                 viewModel = settingsViewModel,
                 onBackClick = { navController.popBackStack() })
+        }
+
+        composable("tutorial") { backstackEntry ->
+            TutorialScreen(onBackClick = { navController.popBackStack() })
         }
     }
 }

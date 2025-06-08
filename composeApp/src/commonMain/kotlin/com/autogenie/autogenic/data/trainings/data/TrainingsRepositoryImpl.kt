@@ -7,6 +7,7 @@ import com.autogenie.autogenic.data.trainings.domain.model.Training
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlin.random.Random
 
 class TrainingsRepositoryImpl(
     val trainingsRemoteSource: TrainingsRemoteSource
@@ -14,7 +15,7 @@ class TrainingsRepositoryImpl(
 
     override fun trainings(): Flow<List<Training>> {
         return flow {
-            delay(200) // simulate network call
+            delay(Random.nextLong(1, 1200)) // simulate network call
             emit(trainingsRemoteSource.fetchTrainings().map(TrainingDto::toDomain))
         }
     }
