@@ -6,60 +6,61 @@ import kotlinx.serialization.json.Json
 class TrainingsRemoteSourceImpl : TrainingsRemoteSource {
 
     val trainingsJson = """
-    [
-      {
-        "id": "Exercise_1",
-        "name": "Heaviness",
-        "color": "#2196F3",
-        "instructions": [
-          "My right arm is heavy.",
-          "My left arm is heavy.",
-          "My arms and legs are heavy.",
-          "I am feeling calm and relaxed."
-        ]
-      },
-      {
-        "id": "Exercise_2",
-        "name": "Warmth",
-        "color": "#FF9800",
-        "instructions": [
-          "My right arm is warm.",
-          "My left arm is warm.",
-          "My arms and legs are pleasantly warm.",
-          "Warmth is flowing through my body."
-        ]
-      },
-      {
-        "id": "Exercise_3",
-        "name": "Heartbeat",
-        "color": "#F44336",
-        "instructions": [
-          "My heartbeat is calm and regular.",
-          "I feel my pulse steadily and peacefully.",
-          "My heart is beating quietly and evenly."
-        ]
-      },
-      {
-        "id": "Exercise_4",
-        "name": "Solar Plexus",
-        "color": "#FFEB3B",
-        "instructions": [
-          "My breathing is calm and regular.",
-          "Warmth flows into my stomach area.",
-          "My solar plexus radiates warmth."
-        ]
-      },
-      {
-        "id": "Exercise_5",
-        "name": "Forehead",
-        "color": "#4CAF50",
-        "instructions": [
-          "My forehead is pleasantly cool.",
-          "I feel a cool sensation in my forehead.",
-          "My mind is clear and calm."
-        ]
-      }
+[
+  {
+    "id": "Breathing_1",
+    "name": "Box Breathing",
+    "instructions": [
+      "Inhale for 4 seconds.",
+      "Hold your breath for 4 seconds.",
+      "Exhale for 4 seconds.",
+      "Hold your breath again for 4 seconds.",
+      "Repeat the cycle calmly."
     ]
+  },
+  {
+    "id": "Breathing_2",
+    "name": "4-7-8 Breathing",
+    "instructions": [
+      "Inhale quietly through your nose for 4 seconds.",
+      "Hold your breath for 7 seconds.",
+      "Exhale slowly through your mouth for 8 seconds.",
+      "Repeat to relax your nervous system."
+    ]
+  },
+  {
+    "id": "Breathing_3",
+    "name": "Alternate Nostril",
+    "instructions": [
+      "Close your right nostril and inhale through the left.",
+      "Close both nostrils and hold.",
+      "Exhale through the right nostril.",
+      "Inhale through the right, hold, and exhale through the left.",
+      "Repeat this alternate cycle."
+    ]
+  },
+  {
+    "id": "Breathing_4",
+    "name": "Deep Diaphragmatic",
+    "instructions": [
+      "Place one hand on your chest and the other on your stomach.",
+      "Inhale deeply through your nose for 4 seconds.",
+      "Feel your stomach rise, not your chest.",
+      "Exhale slowly through pursed lips.",
+      "Repeat while focusing on your breath."
+    ]
+  },
+  {
+    "id": "Breathing_5",
+    "name": "Coherent Breathing",
+    "instructions": [
+      "Inhale gently for 5 seconds.",
+      "Exhale gently for 5 seconds.",
+      "Maintain a steady rhythm for several minutes.",
+      "Let your breath guide you into calm."
+    ]
+  }
+]
 """.trimIndent()
 
     override suspend fun fetchTrainings(): List<TrainingDto> {

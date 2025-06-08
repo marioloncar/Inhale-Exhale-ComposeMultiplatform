@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Book
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -26,7 +27,8 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel,
-    onExerciseClick: (String) -> Unit
+    onExerciseClick: (String) -> Unit,
+    onSettingsClick: () -> Unit,
 ) {
 
     val uiState by viewModel.uiState.collectAsState()
@@ -41,6 +43,14 @@ fun HomeScreen(
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold
                     )
+                },
+                actions = {
+                    IconButton(onClick = onSettingsClick) {
+                        Icon(
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = "Settings"
+                        )
+                    }
                 }
             )
         }
@@ -70,9 +80,9 @@ fun HomeScreen(
             ) {
                 items(uiState.trainings) { training ->
                     Exercise(
-                        title = training.name,
+                        title = training.training.name,
                         color = training.color.toColor(),
-                        onClick = { onExerciseClick(training.id) }
+                        onClick = { onExerciseClick(training.training.id) }
                     )
                 }
             }
@@ -158,17 +168,9 @@ fun SectionTitle(title: String) {
 @Preview
 @Composable
 fun HomeScreenPreview() {
-    HomeScreen(viewModel = HomeViewModel(AppContainer.trainingsRepository), onExerciseClick = {})
-}
-
-@Preview
-@Composable
-fun ExercisePreview() {
-    Exercise(title = "Push-ups", color = Color.Red, onClick = {})
-}
-
-@Preview
-@Composable
-fun SectionTitlePreview() {
-    SectionTitle(title = "Exercises")
+    HomeScreen(
+        viewModel = HomeViewModel(AppContainer.observeTrainingsUseCase),
+        onExerciseClick = {},
+        onSettingsClick = {}
+    )
 }

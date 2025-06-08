@@ -24,7 +24,6 @@ private fun TrainingDto.toDomain(): Training {
     return Training(
         id = id,
         name = name,
-        color = colorHex,
         instructions = instructions
     )
 }

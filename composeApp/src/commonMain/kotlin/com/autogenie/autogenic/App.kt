@@ -6,9 +6,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.autogenie.autogenic.core.ui.AppTheme
+import com.autogenie.autogenic.feature.exercise.ExerciseViewModel
 import com.autogenie.autogenic.feature.exercise.ui.ExerciseScreen
 import com.autogenie.autogenic.feature.home.HomeViewModel
 import com.autogenie.autogenic.feature.home.ui.HomeScreen
+import com.autogenie.autogenic.feature.settings.SettingsViewModel
+import com.autogenie.autogenic.feature.settings.ui.SettingsScreen
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -24,7 +27,15 @@ fun AppNavigation() {
     val navController = rememberNavController()
 
     val homeViewModel = remember {
-        HomeViewModel(trainingsRepository = AppContainer.trainingsRepository)
+        HomeViewModel(observeTrainingsUseCase = AppContainer.observeTrainingsUseCase)
+    }
+
+    val exerciseViewModel = remember {
+        ExerciseViewModel(observeTrainingsUseCase = AppContainer.observeTrainingsUseCase)
+    }
+
+    val settingsViewModel = remember {
+        SettingsViewModel(preferencesRepository = AppContainer.preferencesRepository)
     }
 
     NavHost(navController, startDestination = "home") {
@@ -32,10 +43,24 @@ fun AppNavigation() {
             HomeScreen(
                 viewModel = homeViewModel,
                 onExerciseClick = { id -> navController.navigate("exercise/$id") },
+                onSettingsClick = { navController.navigate("settings") }
             )
         }
+
         composable("exercise/{id}") { backStackEntry ->
-            ExerciseScreen("")
+            val id = backStackEntry.savedStateHandle.get<String>("id")
+                ?: return@composable
+            ExerciseScreen(
+                exerciseId = id,
+                viewModel = exerciseViewModel,
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        composable(route = "settings") { backstackEntry ->
+            SettingsScreen(
+                viewModel = settingsViewModel,
+                onBackClick = { navController.popBackStack() })
         }
     }
 }

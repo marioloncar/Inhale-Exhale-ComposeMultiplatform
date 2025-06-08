@@ -9,8 +9,6 @@ data class TrainingDto(
     val id: String,
     @SerialName("name")
     val name: String,
-    @SerialName("color")
-    val colorHex: String,
     @SerialName("instructions")
     val instructions: List<String>
 )
