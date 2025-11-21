@@ -27,22 +27,15 @@ fun App() {
 fun AppNavigation() {
     val navController = rememberNavController()
 
-    val homeViewModel = remember {
-        HomeViewModel(observeTrainingsUseCase = AppContainer.observeTrainingsUseCase)
-    }
-
-    val exerciseViewModel = remember {
-        ExerciseViewModel(observeTrainingsUseCase = AppContainer.observeTrainingsUseCase)
-    }
-
-    val settingsViewModel = remember {
-        SettingsViewModel(preferencesRepository = AppContainer.preferencesRepository)
-    }
-
     NavHost(navController, startDestination = "home") {
+
         composable("home") {
+            val viewModel = remember {
+                HomeViewModel(observeTrainingsUseCase = AppContainer.observeTrainingsUseCase)
+            }
+
             HomeScreen(
-                viewModel = homeViewModel,
+                viewModel = viewModel,
                 onExerciseClick = { id -> navController.navigate("exercise/$id") },
                 onSettingsClick = { navController.navigate("settings") },
                 onGetStartedClick = { navController.navigate("tutorial") },
@@ -52,14 +45,23 @@ fun AppNavigation() {
         composable("exercise/{id}") { backStackEntry ->
             val id = backStackEntry.savedStateHandle.get<String>("id")
                 ?: return@composable
+
+            val viewModel = remember {
+                ExerciseViewModel(observeTrainingsUseCase = AppContainer.observeTrainingsUseCase)
+            }
+
             ExerciseScreen(
                 exerciseId = id,
-                viewModel = exerciseViewModel,
+                viewModel = viewModel,
                 onBackClick = { navController.popBackStack() }
             )
         }
 
         composable(route = "settings") { backstackEntry ->
+            val settingsViewModel = remember {
+                SettingsViewModel(preferencesRepository = AppContainer.preferencesRepository)
+            }
+
             SettingsScreen(
                 viewModel = settingsViewModel,
                 onBackClick = { navController.popBackStack() })

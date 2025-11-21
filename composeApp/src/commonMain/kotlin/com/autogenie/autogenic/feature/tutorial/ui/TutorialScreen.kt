@@ -1,125 +1,190 @@
 package com.autogenie.autogenic.feature.tutorial.ui
 
-import androidx.compose.animation.core.*
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.SelfImprovement
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+
+enum class StepType { INHALE, HOLD, EXHALE }
+data class BreathingStep(val type: StepType, val duration: Int)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TutorialScreen(
-    onBackClick: () -> Unit
-) {
-    var isInhale by remember { mutableStateOf(true) }
-
-    val pulseTransition = rememberInfiniteTransition(label = "breathing_pulse")
-    val size by pulseTransition.animateFloat(
-        initialValue = 120f,
-        targetValue = 200f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(4000),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "pulse"
+fun TutorialScreen(onBackClick: () -> Unit) {
+    val steps = listOf(
+        BreathingStep(StepType.INHALE, 4),
+        BreathingStep(StepType.HOLD, 4),
+        BreathingStep(StepType.EXHALE, 6)
     )
 
-    LaunchedEffect(Unit) {
-        while (true) {
-            delay(4000)
-            isInhale = !isInhale
+    var currentStepIndex by remember { mutableStateOf(0) }
+    val currentStep = steps[currentStepIndex]
+
+    val scale = remember { Animatable(1f) }
+
+    // Animate breathing orb
+    LaunchedEffect(currentStepIndex) {
+        while (isActive) {
+            when (currentStep.type) {
+                StepType.INHALE -> scale.animateTo(
+                    1.05f,
+                    animationSpec = tween(currentStep.duration * 1000, easing = FastOutSlowInEasing)
+                )
+                StepType.EXHALE -> scale.animateTo(
+                    0.95f,
+                    animationSpec = tween(currentStep.duration * 1000, easing = FastOutSlowInEasing)
+                )
+                StepType.HOLD -> delay(currentStep.duration * 1000L)
+            }
+            currentStepIndex = (currentStepIndex + 1) % steps.size
         }
     }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("How to Breathe", fontSize = 20.sp) },
+                title = { Text("Breathing Tutorial", fontSize = 20.sp) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.Default.SelfImprovement, contentDescription = "Back")
+                        Icon(Icons.Filled.SelfImprovement, contentDescription = "Back")
                     }
                 }
             )
         }
     ) { padding ->
-        Column(
+        Box(
             modifier = Modifier
-                .padding(padding)
                 .fillMaxSize()
-                .padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(32.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(padding)
         ) {
+
+            // ===========================
+            // Subtle full-screen breathing background
+            // ===========================
+            val infiniteTransition = rememberInfiniteTransition()
+            val bgRadius by infiniteTransition.animateFloat(
+                initialValue = 400f,
+                targetValue = 600f,
+                animationSpec = infiniteRepeatable(
+                    animation = tween(6000, easing = FastOutSlowInEasing),
+                    repeatMode = RepeatMode.Reverse
+                )
+            )
+            val bgAlpha by infiniteTransition.animateFloat(
+                initialValue = 0.1f,
+                targetValue = 0.25f,
+                animationSpec = infiniteRepeatable(
+                    animation = tween(6000, easing = FastOutSlowInEasing),
+                    repeatMode = RepeatMode.Reverse
+                )
+            )
 
             Box(
                 modifier = Modifier
-                    .size(size.dp)
-                    .clip(RoundedCornerShape(100.dp))
+                    .fillMaxSize()
+                    .scale(scale.value)
                     .background(
-                        Brush.radialGradient(
-                            colors = listOf(Color(0xFF80D8FF), Color(0xFF039BE5)),
-                            radius = size * 0.6f
-                        )
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = if (isInhale) "Inhale" else "Exhale",
-                    color = Color.White,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
-
-            // Instructions
-            Column(
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .verticalScroll(rememberScrollState())
-            ) {
-                Text(
-                    "Breathing Basics",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
-                )
-                Text("1. Sit or lie down comfortably in a quiet place.")
-                Text("2. Close your eyes gently and relax your body.")
-                Text("3. Inhale slowly through your nose for 4 seconds.")
-                Text("4. Hold your breath for 4 seconds.")
-                Text("5. Exhale slowly through your mouth for 6 seconds.")
-                Text("6. Repeat for several minutes.")
-
-                Text(
-                    "Why It Helps",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
-                )
-                Text("Deep breathing activates the parasympathetic nervous system, which calms your body and reduces stress.")
-            }
-
-            Text(
-                text = "You're doing great! ✨",
-                fontSize = 16.sp,
-                color = MaterialTheme.colorScheme.primary,
-                fontWeight = FontWeight.Medium
+                        brush = Brush.radialGradient(
+                            colors = listOf(
+                                Color(0xFF80D8FF).copy(alpha = bgAlpha),
+                                Color(0xFF039BE5).copy(alpha = bgAlpha + 0.05f),
+                                Color.Transparent
+                            ),
+                            radius = bgRadius
+                        ),
+                        shape = CircleShape
+                    )
+                    .blur(50.dp)
             )
+
+            // ===========================
+            // Foreground content
+            // ===========================
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(24.dp)
+                    .verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(32.dp)
+            ) {
+                // Tutorial instructions
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        "Breathing Basics",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                        color = Color.White
+                    )
+                    Text("1. Sit or lie down comfortably in a quiet place.", color = Color.White)
+                    Text("2. Close your eyes gently and relax your body.", color = Color.White)
+                    Text("3. Follow the breathing orb and text cues above.", color = Color.White)
+                    Text("4. Inhale when it says 'Inhale', hold when it says 'Hold', and exhale when it says 'Exhale'.", color = Color.White)
+                    Text("5. Repeat for several minutes, focusing on smooth breathing.", color = Color.White)
+
+                    Text(
+                        "Why It Helps",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                        color = Color.White
+                    )
+                    Text(
+                        "Deep breathing activates the parasympathetic nervous system, calming your body and reducing stress.",
+                        color = Color.White
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "You're doing great! ✨",
+                    fontSize = 16.sp,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = androidx.compose.ui.text.font.FontWeight.Medium
+                )
+            }
         }
     }
 }

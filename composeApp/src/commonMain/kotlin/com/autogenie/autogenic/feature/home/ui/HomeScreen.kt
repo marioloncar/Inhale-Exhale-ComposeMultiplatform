@@ -66,7 +66,7 @@ fun HomeScreen(
                 onClick = onGetStartedClick
             )
 
-            SectionTitle(title = "Exercises")
+            SectionTitle(title = "Breathing exercises")
 
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
@@ -119,7 +119,10 @@ fun Exercise(title: String, color: Color, onClick: () -> Unit) {
             modifier = Modifier.fillMaxSize().background(gradient),
             contentAlignment = Alignment.Center,
         ) {
-            Text(text = title)
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium
+            )
         }
     }
 }

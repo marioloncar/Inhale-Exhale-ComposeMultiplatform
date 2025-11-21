@@ -5,10 +5,14 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class TrainingDto(
-    @SerialName("id")
     val id: String,
-    @SerialName("name")
     val name: String,
-    @SerialName("instructions")
-    val instructions: List<String>
+    val cycles: Int,
+    val steps: List<StepDto>
+)
+
+@Serializable
+data class StepDto(
+    val type: String,
+    val duration: Int
 )

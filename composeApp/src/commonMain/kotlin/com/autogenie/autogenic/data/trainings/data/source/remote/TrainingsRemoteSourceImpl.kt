@@ -8,56 +8,43 @@ class TrainingsRemoteSourceImpl : TrainingsRemoteSource {
     val trainingsJson = """
 [
   {
-    "id": "Breathing_1",
+    "id": "box",
     "name": "Box Breathing",
-    "instructions": [
-      "Inhale for 4 seconds.",
-      "Hold your breath for 4 seconds.",
-      "Exhale for 4 seconds.",
-      "Hold your breath again for 4 seconds.",
-      "Repeat the cycle calmly."
+    "cycles": 4,
+    "steps": [
+      { "type": "inhale", "duration": 4 },
+      { "type": "hold",   "duration": 4 },
+      { "type": "exhale", "duration": 4 },
+      { "type": "hold",   "duration": 4 }
     ]
   },
   {
-    "id": "Breathing_2",
+    "id": "478",
     "name": "4-7-8 Breathing",
-    "instructions": [
-      "Inhale quietly through your nose for 4 seconds.",
-      "Hold your breath for 7 seconds.",
-      "Exhale slowly through your mouth for 8 seconds.",
-      "Repeat to relax your nervous system."
+    "cycles": 4,
+    "steps": [
+      { "type": "inhale", "duration": 4 },
+      { "type": "hold",   "duration": 7 },
+      { "type": "exhale", "duration": 8 }
     ]
   },
   {
-    "id": "Breathing_3",
-    "name": "Alternate Nostril",
-    "instructions": [
-      "Close your right nostril and inhale through the left.",
-      "Close both nostrils and hold.",
-      "Exhale through the right nostril.",
-      "Inhale through the right, hold, and exhale through the left.",
-      "Repeat this alternate cycle."
+    "id": "physiological_sigh",
+    "name": "Physiological Sigh",
+    "cycles": 3,
+    "steps": [
+      { "type": "inhale", "duration": 2 },
+      { "type": "inhale", "duration": 1 },
+      { "type": "exhale", "duration": 6 }
     ]
   },
   {
-    "id": "Breathing_4",
-    "name": "Deep Diaphragmatic",
-    "instructions": [
-      "Place one hand on your chest and the other on your stomach.",
-      "Inhale deeply through your nose for 4 seconds.",
-      "Feel your stomach rise, not your chest.",
-      "Exhale slowly through pursed lips.",
-      "Repeat while focusing on your breath."
-    ]
-  },
-  {
-    "id": "Breathing_5",
+    "id": "coherent",
     "name": "Coherent Breathing",
-    "instructions": [
-      "Inhale gently for 5 seconds.",
-      "Exhale gently for 5 seconds.",
-      "Maintain a steady rhythm for several minutes.",
-      "Let your breath guide you into calm."
+    "cycles": 10,
+    "steps": [
+      { "type": "inhale", "duration": 5 },
+      { "type": "exhale", "duration": 5 }
     ]
   }
 ]
