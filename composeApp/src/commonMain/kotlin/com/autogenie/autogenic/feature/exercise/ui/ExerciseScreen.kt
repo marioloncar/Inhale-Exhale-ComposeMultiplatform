@@ -42,6 +42,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.autogenie.autogenic.core.util.TTS
 import com.autogenie.autogenic.data.trainings.domain.model.StepType
 import com.autogenie.autogenic.feature.exercise.ExerciseViewModel
 import com.autogenie.autogenic.feature.home.ui.toColor
@@ -73,10 +74,23 @@ fun ExerciseScreen(
 
     val currentStep = training.steps[currentStepIndex]
 
-    // Main orb scale
+    // ---------- COUNTDOWN ----------
+    var countdown by remember { mutableIntStateOf(3) }
+    var isCountdownFinished by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        while (countdown > 0) {
+            TTS.speak(countdown.toString())
+            delay(1000)
+            countdown--
+        }
+        delay(1000)
+        isCountdownFinished = true
+    }
+
+    // ---------- ANIMATIONS ----------
     val scale = remember { Animatable(1f) }
 
-    // subtle secondary pulse
     val subtlePulse = rememberInfiniteTransition()
     val pulse by subtlePulse.animateFloat(
         initialValue = 0.95f,
@@ -87,7 +101,6 @@ fun ExerciseScreen(
         )
     )
 
-    // Floating particles
     val particles = remember {
         List(20) {
             Particle(
@@ -98,37 +111,56 @@ fun ExerciseScreen(
         }
     }
 
-    LaunchedEffect(currentStepIndex, currentCycle) {
-        if (!isRunning) return@LaunchedEffect
+    // ---------- BREATHING LOGIC ----------
+    LaunchedEffect(currentStepIndex, currentCycle, isCountdownFinished) {
+        if (!isCountdownFinished || !isRunning) return@LaunchedEffect
+
+        // Slight pause to separate steps (feels more natural)
+        delay(500)
 
         when (currentStep.type) {
-            StepType.INHALE -> scale.animateTo(
-                targetValue = 1.35f,
-                animationSpec = tween(
-                    durationMillis = currentStep.duration * 1000,
-                    easing = FastOutSlowInEasing
+            StepType.INHALE -> {
+                TTS.speak("Inhale")
+                scale.animateTo(
+                    targetValue = 1.35f,
+                    animationSpec = tween(
+                        durationMillis = currentStep.duration * 1000,
+                        easing = FastOutSlowInEasing
+                    )
                 )
-            )
-            StepType.EXHALE -> scale.animateTo(
-                targetValue = 0.65f,
-                animationSpec = tween(
-                    durationMillis = currentStep.duration * 1000,
-                    easing = FastOutSlowInEasing
+            }
+
+            StepType.EXHALE -> {
+                TTS.speak("Exhale")
+                scale.animateTo(
+                    targetValue = 0.65f,
+                    animationSpec = tween(
+                        durationMillis = currentStep.duration * 1000,
+                        easing = FastOutSlowInEasing
+                    )
                 )
-            )
-            StepType.HOLD -> delay(currentStep.duration * 1000L)
+            }
+
+            StepType.HOLD -> {
+                TTS.speak("Hold")
+                delay(currentStep.duration * 1000L)
+            }
         }
 
         val lastStep = currentStepIndex == training.steps.lastIndex
         if (lastStep) {
-            if (currentCycle == training.cycles) isRunning = false
-            else {
+            if (currentCycle == training.cycles) {
+                isRunning = false
+            } else {
                 currentCycle++
                 currentStepIndex = 0
             }
-        } else currentStepIndex++
+        } else {
+            currentStepIndex++
+        }
     }
 
+    // ---------- UI ----------
     Scaffold(
         topBar = {
             TopAppBar(
@@ -148,13 +180,11 @@ fun ExerciseScreen(
             contentAlignment = Alignment.Center
         ) {
 
-            // Pulsating radial background
+            // Background layers
             PulsatingRadialBackground(baseColor = baseColor, scaleFactor = scale.value)
-
-            // Floating particles layer
             FloatingParticles(particles = particles, baseColor = baseColor)
 
-            // Main breathing orb
+            // Main orb
             Box(
                 modifier = Modifier
                     .size(260.dp)
@@ -163,7 +193,7 @@ fun ExerciseScreen(
                     .blur(8.dp)
             )
 
-            // Labels & cycle info
+            // Step labels
             Column(
                 Modifier
                     .align(Alignment.BottomCenter)
@@ -176,6 +206,22 @@ fun ExerciseScreen(
                     fontSize = 16.sp,
                     color = Color.White.copy(alpha = 0.7f)
                 )
+            }
+
+            // ---------- COUNTDOWN OVERLAY ----------
+            if (!isCountdownFinished) {
+                Box(
+                    Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.45f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = if (countdown > 0) countdown.toString() else "Start",
+                        fontSize = 64.sp,
+                        color = Color.White
+                    )
+                }
             }
         }
     }
