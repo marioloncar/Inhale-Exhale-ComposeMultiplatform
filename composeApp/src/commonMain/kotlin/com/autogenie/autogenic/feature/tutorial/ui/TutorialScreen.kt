@@ -83,7 +83,7 @@ fun TutorialScreen(onBackClick: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Breathing Tutorial", fontSize = 20.sp) },
+                title = { Text("", fontSize = 20.sp) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(Icons.Filled.SelfImprovement, contentDescription = "Back")

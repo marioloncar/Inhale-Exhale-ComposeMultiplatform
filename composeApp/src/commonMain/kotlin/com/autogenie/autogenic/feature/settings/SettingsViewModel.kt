@@ -7,6 +7,7 @@ import com.autogenie.autogenic.feature.settings.ui.model.SettingsUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SettingsViewModel(
@@ -39,5 +40,13 @@ class SettingsViewModel(
         viewModelScope.launch {
             preferencesRepository.setTheme(id)
         }
+    }
+
+    fun setCycleCount(count: Int) {
+        _uiState.update { uiState -> uiState.copy(cycleCount = count) }
+    }
+
+    fun setInfiniteCycle(isInfinite: Boolean) {
+        _uiState.update { uiState -> uiState.copy(isInfiniteCycle = isInfinite) }
     }
 }
