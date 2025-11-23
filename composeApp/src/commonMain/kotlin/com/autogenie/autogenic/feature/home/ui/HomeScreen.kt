@@ -2,14 +2,31 @@ package com.autogenie.autogenic.feature.home.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Book
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -31,7 +48,6 @@ fun HomeScreen(
     onSettingsClick: () -> Unit,
     onGetStartedClick: () -> Unit,
 ) {
-
     val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(
@@ -56,38 +72,50 @@ fun HomeScreen(
             )
         }
     ) { paddingValues ->
-        Column(
+        LazyColumn(
             modifier = Modifier
-                .padding(paddingValues)
                 .fillMaxSize()
+                .padding(paddingValues),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            contentPadding = PaddingValues(bottom = 32.dp)
         ) {
-            GetStartedBanner(
-                title = "Get Started",
-                onClick = onGetStartedClick
-            )
+            // Get Started banner
+            item {
+                GetStartedBanner(title = "Get Started", onClick = onGetStartedClick)
+            }
 
-            SectionTitle(title = "Breathing exercises")
+            // Section title
+            item {
+                SectionTitle(title = "Breathing exercises")
+            }
 
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                contentPadding = PaddingValues(bottom = 32.dp)
-            ) {
-                items(uiState.trainings) { training ->
-                    Exercise(
-                        title = training.training.name,
-                        color = training.color.toColor(),
-                        onClick = { onExerciseClick(training.training.id) }
-                    )
+            // Exercises grid
+            items(uiState.trainings.chunked(2)) { rowTrainings ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    rowTrainings.forEach { training ->
+                        Exercise(
+                            title = training.training.name,
+                            description = training.training.description,
+                            color = training.color.toColor(),
+                            onClick = { onExerciseClick(training.training.id) }
+                        )
+                    }
+
+                    // Fill empty space if row has only 1 item
+                    if (rowTrainings.size == 1) {
+                        Spacer(modifier = Modifier.weight(1f))
+                    }
                 }
             }
         }
     }
 }
+
 
 fun String.toColor(): Color {
     val hex = this.removePrefix("#")
@@ -100,7 +128,12 @@ fun String.toColor(): Color {
 }
 
 @Composable
-fun Exercise(title: String, color: Color, onClick: () -> Unit) {
+fun Exercise(
+    title: String,
+    description: String,
+    color: Color,
+    onClick: () -> Unit
+) {
     val gradient = Brush.linearGradient(
         colors = listOf(
             color.copy(alpha = 1.0f),
@@ -110,22 +143,40 @@ fun Exercise(title: String, color: Color, onClick: () -> Unit) {
 
     Card(
         modifier = Modifier
-            .width(140.dp)
-            .height(120.dp)
+            .width(160.dp)
+            .height(140.dp)
             .clickable { onClick() },
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Box(
-            modifier = Modifier.fillMaxSize().background(gradient),
-            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .fillMaxSize()
+                .background(gradient)
+                .padding(12.dp)
         ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleMedium
-            )
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(8.dp),
+                verticalArrangement = Arrangement.Top
+            ) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1
+                )
+                Spacer(Modifier.height(6.dp))
+                Text(
+                    text = description,
+                    style = MaterialTheme.typography.bodySmall,
+                    maxLines = 3
+                )
+            }
         }
     }
 }
+
 
 @Composable
 fun GetStartedBanner(title: String, onClick: () -> Unit) {

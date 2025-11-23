@@ -25,6 +25,7 @@ private fun TrainingDto.toDomain(): Training =
     Training(
         id = id,
         name = name,
+        description = description,
         cycles = cycles,
         steps = steps.map { it.toDomain() }
     )

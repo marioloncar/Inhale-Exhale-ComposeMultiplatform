@@ -19,10 +19,12 @@ class ObserveTrainingsUseCase(
             val colors = selectedTheme.second
 
             trainings.mapIndexed { index, training ->
-                TrainingWithColor(training, colors[index])
+                val color = colors[index % colors.size]
+                TrainingWithColor(training, color)
             }
         }
     }
+
 
     data class TrainingWithColor(
         val training: Training,
