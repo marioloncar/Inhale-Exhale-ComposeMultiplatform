@@ -1,7 +1,24 @@
 package com.autogenie.autogenic
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -13,13 +30,22 @@ import com.autogenie.autogenic.feature.home.ui.HomeScreen
 import com.autogenie.autogenic.feature.settings.SettingsViewModel
 import com.autogenie.autogenic.feature.settings.ui.SettingsScreen
 import com.autogenie.autogenic.feature.tutorial.ui.TutorialScreen
+import kotlinx.coroutines.delay
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 @Preview
 fun App() {
+    var showSplash by remember { mutableStateOf(true) }
+
     AppTheme {
-        AppNavigation()
+        Crossfade(targetState = showSplash, animationSpec = tween(500)) { isSplash ->
+            if (isSplash) {
+                SplashScreen(onFinished = { showSplash = false })
+            } else {
+                AppNavigation()
+            }
+        }
     }
 }
 
@@ -69,6 +95,38 @@ fun AppNavigation() {
 
         composable("tutorial") { backstackEntry ->
             TutorialScreen(onBackClick = { navController.popBackStack() })
+        }
+    }
+}
+
+@Composable
+fun SplashScreen(onFinished: () -> Unit) {
+    var visible by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        visible = true
+        delay(1200)
+        visible = false
+        delay(300)
+        onFinished()
+    }
+
+    AnimatedVisibility(
+        visible = visible,
+        enter = fadeIn(animationSpec = tween(durationMillis = 600)),
+        exit = fadeOut(animationSpec = tween(durationMillis = 300))
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "Autogenie",
+                style = MaterialTheme.typography.headlineLarge,
+                color = Color.White
+            )
         }
     }
 }
