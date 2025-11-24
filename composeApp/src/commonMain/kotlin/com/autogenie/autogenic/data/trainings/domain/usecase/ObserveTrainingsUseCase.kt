@@ -5,6 +5,7 @@ import com.autogenie.autogenic.data.trainings.domain.TrainingsRepository
 import com.autogenie.autogenic.data.trainings.domain.model.Training
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 
 class ObserveTrainingsUseCase(
     private val trainingsRepository: TrainingsRepository,
@@ -14,7 +15,7 @@ class ObserveTrainingsUseCase(
     operator fun invoke(): Flow<List<TrainingWithColor>> {
         return combine(
             trainingsRepository.trainings(),
-            preferencesRepository.observeSelectedTheme()
+            preferencesRepository.observeUserData().map { it.selectedTheme }
         ) { trainings: List<Training>, selectedTheme: Pair<String, List<String>> ->
             val colors = selectedTheme.second
 
