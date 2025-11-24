@@ -100,7 +100,7 @@ fun HomeScreen(
                     rowTrainings.forEach { training ->
                         Exercise(
                             title = training.training.name,
-                            description = training.training.description,
+                            description = training.training.summary,
                             color = training.color.toColor(),
                             onClick = { onExerciseClick(training.training.id) }
                         )
@@ -143,8 +143,8 @@ fun Exercise(
 
     Card(
         modifier = Modifier
-            .width(160.dp)
-            .height(140.dp)
+            .width(150.dp)
+            .height(130.dp)
             .clickable { onClick() },
         elevation = CardDefaults.cardElevation(4.dp)
     ) {

@@ -6,6 +6,7 @@ import kotlinx.serialization.Serializable
 data class TrainingDto(
     val id: String,
     val name: String,
+    val summary: String,
     val description: String,
     val cycles: Int,
     val steps: List<StepDto>

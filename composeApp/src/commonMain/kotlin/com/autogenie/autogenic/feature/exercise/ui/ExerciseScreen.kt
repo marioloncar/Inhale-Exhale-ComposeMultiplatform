@@ -18,11 +18,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -40,6 +43,9 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TileMode
+import androidx.compose.ui.hapticfeedback.HapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.autogenie.autogenic.core.util.TTS
@@ -60,6 +66,7 @@ fun ExerciseScreen(
         viewModel.loadExercise(exerciseId)
     }
 
+    val haptics = LocalHapticFeedback.current
     val trainingWithColor by viewModel.training.collectAsState()
     val training = trainingWithColor?.training ?: run {
         LoadingScreen()
@@ -71,6 +78,7 @@ fun ExerciseScreen(
     var currentStepIndex by remember { mutableIntStateOf(0) }
     var currentCycle by remember { mutableIntStateOf(1) }
     var isRunning by remember { mutableStateOf(true) }
+    var showInfoDialog by remember { mutableStateOf(false) }
 
     val currentStep = training.steps[currentStepIndex]
 
@@ -80,10 +88,12 @@ fun ExerciseScreen(
 
     LaunchedEffect(Unit) {
         while (countdown > 0) {
+            haptics.vibrateShortly()
             TTS.speak(countdown.toString())
             delay(1000)
             countdown--
         }
+        haptics.vibrateShortly()
         delay(1000)
         isCountdownFinished = true
     }
@@ -120,6 +130,7 @@ fun ExerciseScreen(
 
         when (currentStep.type) {
             StepType.INHALE -> {
+                haptics.vibrateFirmly()
                 TTS.speak("Inhale")
                 scale.animateTo(
                     targetValue = 1.35f,
@@ -131,6 +142,7 @@ fun ExerciseScreen(
             }
 
             StepType.EXHALE -> {
+                haptics.vibrateFirmly()
                 TTS.speak("Exhale")
                 scale.animateTo(
                     targetValue = 0.65f,
@@ -142,6 +154,7 @@ fun ExerciseScreen(
             }
 
             StepType.HOLD -> {
+                haptics.vibrateFirmly()
                 TTS.speak("Hold")
                 delay(currentStep.duration * 1000L)
             }
@@ -161,6 +174,19 @@ fun ExerciseScreen(
     }
 
     // ---------- UI ----------
+    if (showInfoDialog) {
+        AlertDialog(
+            onDismissRequest = { showInfoDialog = false },
+            title = { Text(training.name) },
+            text = { Text(training.description) },
+            confirmButton = {
+                TextButton(onClick = { showInfoDialog = false }) {
+                    Text("Close")
+                }
+            }
+        )
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -168,6 +194,14 @@ fun ExerciseScreen(
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                },
+                actions = {
+                    IconButton(onClick = { showInfoDialog = true }) {
+                        Icon(
+                            Icons.Default.Info,
+                            contentDescription = "Info"
+                        )
                     }
                 }
             )
@@ -296,6 +330,14 @@ fun FloatingParticles(particles: List<Particle>, baseColor: Color) {
             )
         }
     }
+}
+
+private fun HapticFeedback.vibrateShortly() {
+    performHapticFeedback(HapticFeedbackType.Confirm)
+}
+
+private fun HapticFeedback.vibrateFirmly() {
+    performHapticFeedback(HapticFeedbackType.Reject)
 }
 
 data class Particle(

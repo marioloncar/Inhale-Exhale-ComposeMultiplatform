@@ -10,7 +10,8 @@ class TrainingsRemoteSourceImpl : TrainingsRemoteSource {
   {
     "id": "box",
     "name": "Box Breathing",
-    "description": "A balanced 4-4-4-4 pattern that improves focus and reduces stress.",
+    "summary": "A steady, balanced 4-4-4-4 pattern.",
+    "description": "Box breathing uses an even 4-4-4-4 pattern to create balance in the nervous system. It helps sharpen concentration, reduce stress, and bring the mind back into a stable rhythm. This technique is widely used for grounding and quick mental reset.",
     "cycles": 4,
     "steps": [
       { "type": "inhale", "duration": 4 },
@@ -22,7 +23,8 @@ class TrainingsRemoteSourceImpl : TrainingsRemoteSource {
   {
     "id": "478",
     "name": "4-7-8 Breathing",
-    "description": "A calming pattern designed to slow heart rate and ease anxiety.",
+    "summary": "A slow pattern for deep calm.",
+    "description": "The 4-7-8 technique is designed to slow the heart rate and signal deep relaxation. By extending the hold and exhale, it naturally quiets the nervous system and helps ease anxious thoughts. It’s ideal for transitioning into sleep or unwinding after stress.",
     "cycles": 4,
     "steps": [
       { "type": "inhale", "duration": 4 },
@@ -33,7 +35,8 @@ class TrainingsRemoteSourceImpl : TrainingsRemoteSource {
   {
     "id": "physiological_sigh",
     "name": "Physiological Sigh",
-    "description": "A quick stress-reset using a double inhale followed by a long exhale.",
+    "summary": "A fast reset for sudden stress.",
+    "description": "The physiological sigh uses a double inhale followed by an extended exhale to quickly release tension from the body. This method naturally balances carbon dioxide levels and promotes immediate calm. It’s one of the fastest ways to reduce acute stress.",
     "cycles": 3,
     "steps": [
       { "type": "inhale", "duration": 2 },
@@ -45,7 +48,8 @@ class TrainingsRemoteSourceImpl : TrainingsRemoteSource {
   {
     "id": "coherent",
     "name": "Coherent Breathing",
-    "description": "Even 5-5 breathing that stabilizes the nervous system and mood.",
+    "summary": "Even 5-5 breath for steady balance.",
+    "description": "Coherent breathing uses slow, even 5-second inhales and exhales to synchronize the heart, lungs, and nervous system. This pattern promotes emotional balance, reduces stress, and supports long-term resilience. It’s a foundational breathing exercise for daily practice.",
     "cycles": 10,
     "steps": [
       { "type": "inhale", "duration": 5 },
@@ -55,7 +59,8 @@ class TrainingsRemoteSourceImpl : TrainingsRemoteSource {
   {
     "id": "7_11",
     "name": "7-11 Anti-Anxiety Breathing",
-    "description": "Longer exhales activate relaxation and reduce stress quickly.",
+    "summary": "Long exhales for deep relaxation.",
+    "description": "The 7-11 breathing method emphasizes longer exhales to switch the body into a calmer parasympathetic state. It helps slow down racing thoughts, reduce anxiety, and restore a sense of ease. This pattern works especially well during moments of emotional overwhelm.",
     "cycles": 5,
     "steps": [
       { "type": "inhale", "duration": 7 },
@@ -65,7 +70,8 @@ class TrainingsRemoteSourceImpl : TrainingsRemoteSource {
   {
     "id": "5_5_relaxation",
     "name": "5-5 Relaxation Breathing",
-    "description": "Simple balanced breathing ideal for beginners.",
+    "summary": "A simple pattern for quick calm.",
+    "description": "This gentle 5-5 pattern is easy to follow and helps the body settle into a relaxed state. It promotes steady breathing and smooth rhythm while reducing mild stress. Perfect for beginners or anyone needing a quick calming reset.",
     "cycles": 6,
     "steps": [
       { "type": "inhale", "duration": 5 },
@@ -75,7 +81,8 @@ class TrainingsRemoteSourceImpl : TrainingsRemoteSource {
   {
     "id": "equal_breathing",
     "name": "Equal Breathing",
-    "description": "Matching inhale and exhale for steady calm and clarity.",
+    "summary": "Balanced inhale–exhale for clarity.",
+    "description": "Equal breathing uses a consistent inhale and exhale to foster stability and mental clarity. This pattern supports mindfulness by smoothing the breath and quieting internal noise. It’s a versatile technique suitable for focus, meditation, or general relaxation.",
     "cycles": 8,
     "steps": [
       { "type": "inhale", "duration": 4 },
@@ -85,7 +92,8 @@ class TrainingsRemoteSourceImpl : TrainingsRemoteSource {
   {
     "id": "energizing",
     "name": "Energizing Breath",
-    "description": "Short, sharp exhales for alertness and energy boost.",
+    "summary": "Short exhales for a quick energy boost.",
+    "description": "The energizing breath features fast exhales and short inhales to wake up the body. It increases alertness, stimulates circulation, and helps break through sluggish moments. Use it when you need a natural lift without caffeine.",
     "cycles": 6,
     "steps": [
       { "type": "inhale", "duration": 2 },
@@ -95,7 +103,8 @@ class TrainingsRemoteSourceImpl : TrainingsRemoteSource {
   {
     "id": "calm_long_exhale",
     "name": "Calming Long Exhale",
-    "description": "A longer exhale pattern that deeply relaxes the body.",
+    "summary": "Extended exhales for full-body calm.",
+    "description": "This technique slows the breathing rhythm by extending the exhale, which signals the body to unwind. Longer exhales release tension, lower stress hormones, and support a calm mental state. It’s ideal for ending the day or easing into rest.",
     "cycles": 6,
     "steps": [
       { "type": "inhale", "duration": 4 },
@@ -105,7 +114,8 @@ class TrainingsRemoteSourceImpl : TrainingsRemoteSource {
   {
     "id": "morning_wakeup",
     "name": "Morning Wake-Up Breath",
-    "description": "A gentle pattern to activate the body and mind in the morning.",
+    "summary": "A light pattern to start the day.",
+    "description": "The morning wake-up breath uses a short inhale-hold-exhale rhythm to energize the mind while keeping the body calm. It encourages oxygen flow and promotes alertness without overstimulation. A great way to start the day with clarity and intention.",
     "cycles": 5,
     "steps": [
       { "type": "inhale", "duration": 3 },
@@ -114,7 +124,6 @@ class TrainingsRemoteSourceImpl : TrainingsRemoteSource {
     ]
   }
 ]
-
 """.trimIndent()
 
     override suspend fun fetchTrainings(): List<TrainingDto> {
