@@ -79,12 +79,11 @@ fun HomeScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             contentPadding = PaddingValues(bottom = 32.dp)
         ) {
-            // Get Started banner
             item {
-                GetStartedBanner(title = "Get Started", onClick = onGetStartedClick)
+                val bannerColor = uiState.trainings.firstOrNull()?.color?.toColor() ?: Color(0xFF2196F3)
+                GetStartedBanner(title = "Get Started", color = bannerColor, onClick = onGetStartedClick)
             }
 
-            // Section title
             item {
                 SectionTitle(title = "Breathing exercises")
             }
@@ -106,7 +105,6 @@ fun HomeScreen(
                         )
                     }
 
-                    // Fill empty space if row has only 1 item
                     if (rowTrainings.size == 1) {
                         Spacer(modifier = Modifier.weight(1f))
                     }
@@ -115,7 +113,6 @@ fun HomeScreen(
         }
     }
 }
-
 
 fun String.toColor(): Color {
     val hex = this.removePrefix("#")
@@ -177,16 +174,15 @@ fun Exercise(
     }
 }
 
-
 @Composable
-fun GetStartedBanner(title: String, onClick: () -> Unit) {
+fun GetStartedBanner(title: String, color: Color, onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
             .background(
                 brush = Brush.linearGradient(
-                    colors = listOf(Color(0xFF2196F3), Color(0xFF9C27B0))
+                    colors = listOf(color.copy(alpha = 0.9f), color.copy(alpha = 0.6f))
                 ),
                 shape = MaterialTheme.shapes.large
             )
