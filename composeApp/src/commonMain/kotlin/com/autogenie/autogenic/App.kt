@@ -9,6 +9,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -39,11 +40,16 @@ fun App() {
     var showSplash by remember { mutableStateOf(true) }
 
     AppTheme {
-        Crossfade(targetState = showSplash, animationSpec = tween(500)) { isSplash ->
-            if (isSplash) {
-                SplashScreen(onFinished = { showSplash = false })
-            } else {
-                AppNavigation()
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            Crossfade(targetState = showSplash, animationSpec = tween(500)) { isSplash ->
+                if (isSplash) {
+                    SplashScreen(onFinished = { showSplash = false })
+                } else {
+                    AppNavigation()
+                }
             }
         }
     }
@@ -129,7 +135,7 @@ fun SplashScreen(onFinished: () -> Unit) {
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "Autogenie",
+                text = "InhaleExhale",
                 style = MaterialTheme.typography.headlineLarge,
                 color = Color.White
             )
