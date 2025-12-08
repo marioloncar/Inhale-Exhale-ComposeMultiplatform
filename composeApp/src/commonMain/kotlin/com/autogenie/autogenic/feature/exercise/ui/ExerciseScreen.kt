@@ -1,41 +1,15 @@
 package com.autogenie.autogenic.feature.exercise.ui
 
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -63,9 +37,7 @@ fun ExerciseScreen(
     viewModel: ExerciseViewModel,
     onBackClick: () -> Unit
 ) {
-    LaunchedEffect(exerciseId) {
-        viewModel.loadExercise(exerciseId)
-    }
+    LaunchedEffect(exerciseId) { viewModel.loadExercise(exerciseId) }
 
     val haptics = LocalHapticFeedback.current
     val trainingUiModel by viewModel.training.collectAsState()
@@ -77,8 +49,8 @@ fun ExerciseScreen(
     val baseColor = trainingUiModel!!.color.toColor()
     val isInfiniteCycle = trainingUiModel!!.isInfiniteCycle
 
-    var currentStepIndex by remember { mutableIntStateOf(0) }
-    var currentCycle by remember { mutableIntStateOf(1) }
+    var currentStepIndex by remember { mutableStateOf(0) }
+    var currentCycle by remember { mutableStateOf(1) }
     var isRunning by remember { mutableStateOf(true) }
     var showInfoDialog by remember { mutableStateOf(false) }
     var startExercise by remember { mutableStateOf(true) }
@@ -86,7 +58,7 @@ fun ExerciseScreen(
     val currentStep = training.steps[currentStepIndex]
 
     // ---------- COUNTDOWN ----------
-    var countdown by remember { mutableIntStateOf(3) }
+    var countdown by remember { mutableStateOf(3) }
     var isCountdownFinished by remember { mutableStateOf(false) }
 
     LaunchedEffect(startExercise) {
@@ -142,7 +114,6 @@ fun ExerciseScreen(
                     )
                 )
             }
-
             StepType.EXHALE -> {
                 haptics.vibrateFirmly()
                 TTS.speak("Exhale")
@@ -154,7 +125,6 @@ fun ExerciseScreen(
                     )
                 )
             }
-
             StepType.HOLD -> {
                 haptics.vibrateFirmly()
                 TTS.speak("Hold")
@@ -185,11 +155,11 @@ fun ExerciseScreen(
     if (showInfoDialog) {
         AlertDialog(
             onDismissRequest = { showInfoDialog = false },
-            title = { Text(training.name) },
-            text = { Text(training.description) },
+            title = { Text(training.name, color = MaterialTheme.colorScheme.onBackground) },
+            text = { Text(training.description, color = MaterialTheme.colorScheme.onBackground) },
             confirmButton = {
                 TextButton(onClick = { showInfoDialog = false }) {
-                    Text("Close")
+                    Text("Close", color = MaterialTheme.colorScheme.primary)
                 }
             }
         )
@@ -198,15 +168,15 @@ fun ExerciseScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(training.name) },
+                title = { Text(training.name, color = MaterialTheme.colorScheme.onBackground) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.onBackground)
                     }
                 },
                 actions = {
                     IconButton(onClick = { showInfoDialog = true }) {
-                        Icon(Icons.Default.Info, contentDescription = "Info")
+                        Icon(Icons.Default.Info, contentDescription = "Info", tint = MaterialTheme.colorScheme.onBackground)
                     }
                 }
             )
@@ -240,14 +210,14 @@ fun ExerciseScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 if (isRunning) {
-                    Text(stepLabel(currentStep.type), fontSize = 30.sp, color = Color.White)
+                    Text(stepLabel(currentStep.type), fontSize = 30.sp, color = MaterialTheme.colorScheme.onBackground)
                     Text(
                         text = "Cycle $currentCycle / ${training.cycles}" + if (isInfiniteCycle) " (∞)" else "",
                         fontSize = 16.sp,
-                        color = Color.White.copy(alpha = 0.7f)
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
                     )
                 } else {
-                    Text("Exercise Complete!", fontSize = 28.sp, color = Color.White)
+                    Text("Exercise Complete!", fontSize = 28.sp, color = MaterialTheme.colorScheme.onBackground)
                     TextButton(onClick = {
                         currentStepIndex = 0
                         currentCycle = 1
@@ -256,7 +226,7 @@ fun ExerciseScreen(
                         isCountdownFinished = false
                         startExercise = !startExercise
                     }) {
-                        Text("Restart Exercise", fontSize = 16.sp, color = Color.White)
+                        Text("Restart Exercise", fontSize = 16.sp, color = MaterialTheme.colorScheme.primary)
                     }
                 }
             }
@@ -266,19 +236,21 @@ fun ExerciseScreen(
                 Box(
                     Modifier
                         .fillMaxSize()
-                        .background(Color.Black.copy(alpha = 0.45f)),
+                        .background(MaterialTheme.colorScheme.background.copy(alpha = 0.45f)),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = if (countdown > 0) countdown.toString() else "Start",
                         fontSize = 64.sp,
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                 }
             }
         }
     }
 }
+
+// ---------- Supporting Composables ----------
 
 @Composable
 fun PulsatingRadialBackground(baseColor: Color, scaleFactor: Float) {
@@ -327,10 +299,7 @@ fun FloatingParticles(particles: List<Particle>, baseColor: Color) {
             initialValue = particle.offset.y,
             targetValue = 1f,
             animationSpec = infiniteRepeatable(
-                animation = tween(
-                    durationMillis = (4000 / particle.speed).toInt(),
-                    easing = LinearEasing
-                ),
+                animation = tween((4000 / particle.speed).toInt(), easing = LinearEasing),
                 repeatMode = RepeatMode.Restart
             )
         )
@@ -338,10 +307,7 @@ fun FloatingParticles(particles: List<Particle>, baseColor: Color) {
             initialValue = particle.offset.x,
             targetValue = particle.offset.x + Random.nextFloat() * 0.1f - 0.05f,
             animationSpec = infiniteRepeatable(
-                animation = tween(
-                    durationMillis = (5000 / particle.speed).toInt(),
-                    easing = LinearEasing
-                ),
+                animation = tween((5000 / particle.speed).toInt(), easing = LinearEasing),
                 repeatMode = RepeatMode.Reverse
             )
         )
@@ -369,7 +335,7 @@ fun FloatingParticles(particles: List<Particle>, baseColor: Color) {
         val centerX = size.width / 2
         val centerY = size.height / 2
 
-        animatedParticles.forEachIndexed { index, triple ->
+        animatedParticles.forEach { triple ->
             val (xAnim, yAnim, sizeAlpha) = triple
             val (radiusAnim, alphaAnim) = sizeAlpha
             val x = xAnim.value * size.width
@@ -384,28 +350,19 @@ fun FloatingParticles(particles: List<Particle>, baseColor: Color) {
             )
         }
     }
-
 }
 
+// ---------- Helpers ----------
 
-private fun HapticFeedback.vibrateShortly() {
-    performHapticFeedback(HapticFeedbackType.Confirm)
-}
+private fun HapticFeedback.vibrateShortly() { performHapticFeedback(HapticFeedbackType.Confirm) }
+private fun HapticFeedback.vibrateFirmly() { performHapticFeedback(HapticFeedbackType.Reject) }
 
-private fun HapticFeedback.vibrateFirmly() {
-    performHapticFeedback(HapticFeedbackType.Reject)
-}
-
-data class Particle(
-    val offset: Offset,
-    val size: Float,
-    val speed: Float
-)
+data class Particle(val offset: Offset, val size: Float, val speed: Float)
 
 @Composable
 private fun LoadingScreen() {
     Box(Modifier.fillMaxSize(), Alignment.Center) {
-        Text("Loading...", color = Color.Gray)
+        Text("Loading...", color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f))
     }
 }
 

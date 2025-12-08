@@ -4,46 +4,29 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.SelfImprovement
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
+import kotlinx.coroutines.delay
 
 enum class StepType { INHALE, HOLD, EXHALE }
 data class BreathingStep(val type: StepType, val duration: Int)
@@ -97,7 +80,6 @@ fun TutorialScreen(onBackClick: () -> Unit) {
                 .fillMaxSize()
                 .padding(padding)
         ) {
-
             // ===========================
             // Subtle full-screen breathing background
             // ===========================
@@ -156,24 +138,39 @@ fun TutorialScreen(onBackClick: () -> Unit) {
                     Text(
                         "Breathing Basics",
                         style = MaterialTheme.typography.titleLarge,
-                        fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
-                        color = Color.White
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground
                     )
-                    Text("1. Sit or lie down comfortably in a quiet place.", color = Color.White)
-                    Text("2. Close your eyes gently and relax your body.", color = Color.White)
-                    Text("3. Follow the breathing orb and text cues above.", color = Color.White)
-                    Text("4. Inhale when it says 'Inhale', hold when it says 'Hold', and exhale when it says 'Exhale'.", color = Color.White)
-                    Text("5. Repeat for several minutes, focusing on smooth breathing.", color = Color.White)
+                    Text(
+                        "1. Sit or lie down comfortably in a quiet place.",
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                    Text(
+                        "2. Close your eyes gently and relax your body.",
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                    Text(
+                        "3. Follow the breathing orb and text cues above.",
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                    Text(
+                        "4. Inhale when it says 'Inhale', hold when it says 'Hold', and exhale when it says 'Exhale'.",
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                    Text(
+                        "5. Repeat for several minutes, focusing on smooth breathing.",
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
 
                     Text(
                         "Why It Helps",
                         style = MaterialTheme.typography.titleLarge,
-                        fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
-                        color = Color.White
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                     Text(
                         "Deep breathing activates the parasympathetic nervous system, calming your body and reducing stress.",
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                 }
 
@@ -182,7 +179,7 @@ fun TutorialScreen(onBackClick: () -> Unit) {
                     text = "You're doing great! ✨",
                     fontSize = 16.sp,
                     color = MaterialTheme.colorScheme.primary,
-                    fontWeight = androidx.compose.ui.text.font.FontWeight.Medium
+                    fontWeight = FontWeight.Medium
                 )
             }
         }

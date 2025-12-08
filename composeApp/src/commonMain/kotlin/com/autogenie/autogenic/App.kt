@@ -1,11 +1,13 @@
 package com.autogenie.autogenic
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.background
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
@@ -19,6 +21,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -113,32 +117,56 @@ fun AppNavigation() {
 
 @Composable
 fun SplashScreen(onFinished: () -> Unit) {
-    var visible by remember { mutableStateOf(false) }
+    var visible by remember { mutableStateOf(true) }
+
+    val infiniteTransition = rememberInfiniteTransition()
+    val radius by infiniteTransition.animateFloat(
+        initialValue = 100f,
+        targetValue = 300f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(2000, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        )
+    )
+
+    val primaryColor = MaterialTheme.colorScheme.primary
+    val textColor = MaterialTheme.colorScheme.onBackground
 
     LaunchedEffect(Unit) {
-        visible = true
-        delay(1200)
+        delay(2000)
         visible = false
         delay(300)
         onFinished()
     }
 
-    AnimatedVisibility(
-        visible = visible,
-        enter = fadeIn(animationSpec = tween(durationMillis = 600)),
-        exit = fadeOut(animationSpec = tween(durationMillis = 300))
-    ) {
+    if (visible) {
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black),
+            modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
+            Canvas(modifier = Modifier.fillMaxSize()) {
+                drawCircle(
+                    brush = Brush.radialGradient(
+                        colors = listOf(
+                            primaryColor.copy(alpha = 0.3f),
+                            Color.Transparent
+                        ),
+                        center = Offset(size.width / 2, size.height / 2),
+                        radius = radius
+                    ),
+                    radius = radius,
+                    center = Offset(size.width / 2, size.height / 2)
+                )
+            }
+
             Text(
-                text = "InhaleExhale",
-                style = MaterialTheme.typography.headlineLarge,
-                color = Color.White
+                text = "Inhale - Exhale",
+                color = textColor,
+                style = MaterialTheme.typography.headlineLarge
             )
         }
     }
 }
+
+
+

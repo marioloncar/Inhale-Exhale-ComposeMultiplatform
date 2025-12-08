@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Book
 import androidx.compose.material.icons.filled.Settings
@@ -143,7 +144,8 @@ fun Exercise(
             .width(150.dp)
             .height(130.dp)
             .clickable { onClick() },
-        elevation = CardDefaults.cardElevation(4.dp)
+        elevation = CardDefaults.cardElevation(4.dp),
+        shape = RoundedCornerShape(24.dp)
     ) {
         Box(
             modifier = Modifier
@@ -184,7 +186,7 @@ fun GetStartedBanner(title: String, color: Color, onClick: () -> Unit) {
                 brush = Brush.linearGradient(
                     colors = listOf(color.copy(alpha = 0.9f), color.copy(alpha = 0.6f))
                 ),
-                shape = MaterialTheme.shapes.large
+                shape = RoundedCornerShape(24.dp),
             )
             .clickable { onClick() }
             .padding(16.dp)
