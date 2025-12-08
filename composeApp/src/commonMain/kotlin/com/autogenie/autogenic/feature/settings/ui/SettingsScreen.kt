@@ -18,8 +18,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -54,7 +52,6 @@ fun SettingsScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    // Theme picker bottom sheet state
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var showThemeSheet by remember { mutableStateOf(false) }
 
@@ -98,18 +95,12 @@ fun SettingsScreen(
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
 
-            // =============================
-            // 🔵 THEME SETTING ROW
-            // =============================
             SettingRow(
                 title = "Theme",
                 value = uiState.selectedThemeId.orEmpty(),
                 onClick = { showThemeSheet = true }
             )
 
-            // =============================
-            // 🔵 CYCLE COUNT SETTING
-            // =============================
             InfiniteCycleSetting(
                 infinite = uiState.isInfiniteCycle,
                 onToggle = { viewModel.setInfiniteCycle(!uiState.isInfiniteCycle) }
@@ -118,7 +109,6 @@ fun SettingsScreen(
     }
 }
 
-// SIMPLE ROW FOR THEME SELECTION
 @Composable
 fun SettingRow(
     title: String,
@@ -139,65 +129,6 @@ fun SettingRow(
             fontSize = 16.sp,
             color = MaterialTheme.colorScheme.primary
         )
-    }
-}
-
-// =============================
-// 🔵 CYCLE COUNT SETTING
-// =============================
-
-@Composable
-fun CycleCountSetting(
-    count: Int,
-    onIncrement: () -> Unit,
-    onDecrement: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 14.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text("Cycle repetitions", fontSize = 16.sp)
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-
-            // Minus button
-            IconButton(
-                onClick = onDecrement,
-                modifier = Modifier.size(36.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Remove,
-                    contentDescription = "Decrease",
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
-
-            // Value
-            Text(
-                count.toString(),
-                fontSize = 20.sp,
-                modifier = Modifier.padding(12.dp),
-                color = MaterialTheme.colorScheme.primary
-            )
-
-            // Plus button
-            IconButton(
-                onClick = onIncrement,
-                modifier = Modifier.size(36.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Increase",
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
-        }
     }
 }
 
@@ -290,28 +221,5 @@ fun ThemePickerSheet(
                 }
             }
         }
-    }
-}
-
-fun String.toColor(): Color {
-    // Remove leading '#' if present
-    val hex = this.removePrefix("#")
-    return try {
-        when (hex.length) {
-            6 -> Color(
-                red = hex.take(2).toInt(16),
-                green = hex.substring(2, 4).toInt(16),
-                blue = hex.substring(4, 6).toInt(16)
-            )
-            8 -> Color(
-                alpha = hex.take(2).toInt(16),
-                red = hex.substring(2, 4).toInt(16),
-                green = hex.substring(4, 6).toInt(16),
-                blue = hex.substring(6, 8).toInt(16)
-            )
-            else -> Color.Gray
-        }
-    } catch (e: Exception) {
-        Color.Gray
     }
 }
