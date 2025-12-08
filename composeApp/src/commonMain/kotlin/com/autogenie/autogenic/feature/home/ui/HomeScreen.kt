@@ -2,32 +2,14 @@ package com.autogenie.autogenic.feature.home.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Book
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -36,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.autogenie.autogenic.AppContainer
 import com.autogenie.autogenic.feature.home.HomeViewModel
@@ -89,25 +72,26 @@ fun HomeScreen(
                 SectionTitle(title = "Breathing exercises")
             }
 
-            // Exercises grid
             items(uiState.trainings.chunked(2)) { rowTrainings ->
-                Row(
+                BoxWithConstraints(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        .padding(horizontal = 16.dp)
                 ) {
-                    rowTrainings.forEach { training ->
-                        Exercise(
-                            title = training.training.name,
-                            description = training.training.summary,
-                            color = training.color.toColor(),
-                            onClick = { onExerciseClick(training.training.id) }
-                        )
-                    }
+                    val spacing = 16.dp
+                    val totalSpacing = spacing * (rowTrainings.size - 1)
+                    val cardWidth = (maxWidth - totalSpacing) / rowTrainings.size
 
-                    if (rowTrainings.size == 1) {
-                        Spacer(modifier = Modifier.weight(1f))
+                    Row(horizontalArrangement = Arrangement.spacedBy(spacing)) {
+                        rowTrainings.forEach { training ->
+                            Exercise(
+                                title = training.training.name,
+                                description = training.training.summary,
+                                color = training.color.toColor(),
+                                width = cardWidth,
+                                onClick = { onExerciseClick(training.training.id) }
+                            )
+                        }
                     }
                 }
             }
@@ -115,6 +99,9 @@ fun HomeScreen(
     }
 }
 
+// ---------------------
+// Helper function
+// ---------------------
 fun String.toColor(): Color {
     val hex = this.removePrefix("#")
     val colorLong = when (hex.length) {
@@ -125,11 +112,15 @@ fun String.toColor(): Color {
     return Color(colorLong)
 }
 
+// ---------------------
+// Exercise Card
+// ---------------------
 @Composable
 fun Exercise(
     title: String,
     description: String,
     color: Color,
+    width: Dp,
     onClick: () -> Unit
 ) {
     val gradient = Brush.linearGradient(
@@ -141,11 +132,11 @@ fun Exercise(
 
     Card(
         modifier = Modifier
-            .width(150.dp)
-            .height(130.dp)
+            .width(width)
+            .height(140.dp)
             .clickable { onClick() },
-        elevation = CardDefaults.cardElevation(4.dp),
-        shape = RoundedCornerShape(24.dp)
+        shape = RoundedCornerShape(24.dp),
+        elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Box(
             modifier = Modifier
@@ -154,18 +145,15 @@ fun Exercise(
                 .padding(12.dp)
         ) {
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(8.dp),
-                verticalArrangement = Arrangement.Top
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.SpaceEvenly
             ) {
                 Text(
                     text = title,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    maxLines = 1
+                    maxLines = 2
                 )
-                Spacer(Modifier.height(6.dp))
                 Text(
                     text = description,
                     style = MaterialTheme.typography.bodySmall,
@@ -176,6 +164,9 @@ fun Exercise(
     }
 }
 
+// ---------------------
+// Get Started Banner
+// ---------------------
 @Composable
 fun GetStartedBanner(title: String, color: Color, onClick: () -> Unit) {
     Box(
@@ -186,7 +177,7 @@ fun GetStartedBanner(title: String, color: Color, onClick: () -> Unit) {
                 brush = Brush.linearGradient(
                     colors = listOf(color.copy(alpha = 0.9f), color.copy(alpha = 0.6f))
                 ),
-                shape = RoundedCornerShape(24.dp),
+                shape = RoundedCornerShape(24.dp)
             )
             .clickable { onClick() }
             .padding(16.dp)
@@ -207,6 +198,9 @@ fun GetStartedBanner(title: String, color: Color, onClick: () -> Unit) {
     }
 }
 
+// ---------------------
+// Section Title
+// ---------------------
 @Composable
 fun SectionTitle(title: String) {
     Text(
@@ -216,6 +210,9 @@ fun SectionTitle(title: String) {
     )
 }
 
+// ---------------------
+// Preview
+// ---------------------
 @Preview
 @Composable
 fun HomeScreenPreview() {
