@@ -1,6 +1,7 @@
 package com.autogenie.autogenic.feature.settings.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -39,7 +40,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.autogenie.autogenic.feature.home.ui.toColor
@@ -221,7 +222,6 @@ fun InfiniteCycleSetting(
     }
 }
 
-
 @Composable
 fun ThemePickerSheet(
     themes: Map<String, List<String>>,
@@ -250,15 +250,14 @@ fun ThemePickerSheet(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable { onThemeSelected(label) }
-                            .shadow(
-                                elevation = if (isSelected) 8.dp else 2.dp,
+                            .border(
+                                width = if (isSelected) 3.dp else 0.dp,
+                                color = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent,
                                 shape = RoundedCornerShape(16.dp)
                             ),
                         shape = RoundedCornerShape(16.dp),
                         colors = CardDefaults.cardColors(
-                            containerColor =
-                                if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
-                                else MaterialTheme.colorScheme.surface
+                            containerColor = MaterialTheme.colorScheme.surface
                         )
                     ) {
                         Column(
@@ -266,7 +265,7 @@ fun ThemePickerSheet(
                             verticalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
                             Text(
-                                label,
+                                text = label,
                                 fontSize = 16.sp,
                                 color = if (isSelected)
                                     MaterialTheme.colorScheme.primary
@@ -274,7 +273,10 @@ fun ThemePickerSheet(
                                     MaterialTheme.colorScheme.onSurface
                             )
 
-                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
                                 colors.forEach { colorHex ->
                                     Box(
                                         modifier = Modifier
@@ -288,5 +290,28 @@ fun ThemePickerSheet(
                 }
             }
         }
+    }
+}
+
+fun String.toColor(): Color {
+    // Remove leading '#' if present
+    val hex = this.removePrefix("#")
+    return try {
+        when (hex.length) {
+            6 -> Color(
+                red = hex.take(2).toInt(16),
+                green = hex.substring(2, 4).toInt(16),
+                blue = hex.substring(4, 6).toInt(16)
+            )
+            8 -> Color(
+                alpha = hex.take(2).toInt(16),
+                red = hex.substring(2, 4).toInt(16),
+                green = hex.substring(4, 6).toInt(16),
+                blue = hex.substring(6, 8).toInt(16)
+            )
+            else -> Color.Gray
+        }
+    } catch (e: Exception) {
+        Color.Gray
     }
 }
