@@ -7,8 +7,6 @@ import com.autogenie.autogenic.feature.settings.ui.model.SettingsUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SettingsViewModel(
@@ -22,15 +20,17 @@ class SettingsViewModel(
         viewModelScope.launch {
             combine(
                 preferencesRepository.observeAvailableThemes(),
-                preferencesRepository.observeUserData().map { it.selectedTheme },
+                preferencesRepository.observeUserData(),
                 ::Pair
             )
                 .collect {
-                    val (availableThemes, selectedThemeId) = it
+                    val (availableThemes, userData) = it
                     _uiState.emit(
                         SettingsUiState(
                             availableThemes = availableThemes,
-                            selectedThemeId = selectedThemeId.first
+                            selectedThemeId = userData.selectedTheme.first,
+                            cycleCount = userData.selectedCycleCount,
+                            isInfiniteCycle = userData.useInfiniteCycles
                         )
                     )
                 }
@@ -44,10 +44,14 @@ class SettingsViewModel(
     }
 
     fun setCycleCount(count: Int) {
-        _uiState.update { uiState -> uiState.copy(cycleCount = count) }
+        viewModelScope.launch {
+            preferencesRepository.setCycleCount(count)
+        }
     }
 
     fun setInfiniteCycle(isInfinite: Boolean) {
-        _uiState.update { uiState -> uiState.copy(isInfiniteCycle = isInfinite) }
+        viewModelScope.launch {
+            preferencesRepository.setInfiniteCycle(isInfinite)
+        }
     }
 }

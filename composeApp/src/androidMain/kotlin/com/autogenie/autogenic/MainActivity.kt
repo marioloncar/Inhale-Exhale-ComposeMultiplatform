@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.autogenie.autogenic.core.util.TTS
+import com.autogenie.autogenic.core.util.createDataStore
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -14,6 +15,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         TTS.initialize(this)
+        AppContainer.initialize(createDataStore(applicationContext))
 
         setContent {
             App()

@@ -10,4 +10,8 @@ interface PreferencesRepository {
     fun observeAvailableThemes(): Flow<Map<String, List<String>>>
 
     suspend fun setTheme(id: String)
+
+    suspend fun setCycleCount(count: Int)
+
+    suspend fun setInfiniteCycle(infinite: Boolean)
 }

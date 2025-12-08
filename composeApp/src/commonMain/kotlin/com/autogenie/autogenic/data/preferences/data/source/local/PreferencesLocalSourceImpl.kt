@@ -1,10 +1,15 @@
 package com.autogenie.autogenic.data.preferences.data.source.local
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import com.autogenie.autogenic.data.preferences.data.model.UserData
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 
 private val colorSets = mapOf(
     "Ocean Breeze" to listOf(
@@ -44,20 +49,31 @@ private val colorSets = mapOf(
     )
 )
 
-class PreferencesLocalSourceImpl : PreferencesLocalSource {
+class PreferencesLocalSourceImpl(
+    private val dataStore: DataStore<Preferences>
+) : PreferencesLocalSource {
 
-    // TODO use DataStore
-    val userData: MutableSharedFlow<UserData> =
-        MutableStateFlow(
-            UserData(
-                selectedTheme = colorSets.entries.first().toPair(),
-                selectedCycleCount = 1,
-                useInfiniteCycles = false
-            )
-        )
+    private companion object {
+        val KEY_THEME = stringPreferencesKey("selected_theme_name")
+        val KEY_CYCLE_COUNT = intPreferencesKey("selected_cycle_count")
+        val KEY_INFINITE = booleanPreferencesKey("use_infinite_cycles")
+    }
 
     override fun observeUserData(): Flow<UserData> {
-        return userData
+        return dataStore.data.map { prefs ->
+
+            val themeName = prefs[KEY_THEME] ?: colorSets.keys.first()
+            val cycleCount = prefs[KEY_CYCLE_COUNT] ?: 1
+            val infiniteCycles = prefs[KEY_INFINITE] ?: false
+
+            val colors = colorSets[themeName].orEmpty()
+
+            UserData(
+                selectedTheme = themeName to colors,
+                selectedCycleCount = cycleCount,
+                useInfiniteCycles = infiniteCycles
+            )
+        }
     }
 
     override fun observeAvailableThemes(): Flow<Map<String, List<String>>> {
@@ -65,15 +81,20 @@ class PreferencesLocalSourceImpl : PreferencesLocalSource {
     }
 
     override suspend fun setTheme(id: String) {
-        val selectedColors = colorSets[id].orEmpty()
-        userData.emit(userData.replayCache.last().copy(selectedTheme = id to selectedColors))
+        dataStore.edit { prefs ->
+            prefs[KEY_THEME] = id
+        }
     }
 
     override suspend fun setCycleCount(count: Int) {
-        userData.emit(userData.replayCache.last().copy(selectedCycleCount = count))
+        dataStore.edit { prefs ->
+            prefs[KEY_CYCLE_COUNT] = count
+        }
     }
 
     override suspend fun setInfiniteCycle(infinite: Boolean) {
-        userData.emit(userData.replayCache.last().copy(useInfiniteCycles = infinite))
+        dataStore.edit { prefs ->
+            prefs[KEY_INFINITE] = infinite
+        }
     }
 }
