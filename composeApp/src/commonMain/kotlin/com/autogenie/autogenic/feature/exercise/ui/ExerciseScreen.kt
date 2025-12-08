@@ -80,6 +80,7 @@ fun ExerciseScreen(
     var currentCycle by remember { mutableIntStateOf(1) }
     var isRunning by remember { mutableStateOf(true) }
     var showInfoDialog by remember { mutableStateOf(false) }
+    var startExercise by remember { mutableStateOf(true) }
 
     val currentStep = training.steps[currentStepIndex]
 
@@ -87,7 +88,7 @@ fun ExerciseScreen(
     var countdown by remember { mutableIntStateOf(3) }
     var isCountdownFinished by remember { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(startExercise) {
         while (countdown > 0) {
             haptics.vibrateShortly()
             TTS.speak(countdown.toString())
@@ -165,7 +166,6 @@ fun ExerciseScreen(
         if (lastStep) {
             if (currentCycle == training.cycles) {
                 if (isInfiniteCycle) {
-                    // Repeat indefinitely
                     currentCycle = 1
                     currentStepIndex = 0
                 } else {
@@ -231,22 +231,36 @@ fun ExerciseScreen(
                     .blur(8.dp)
             )
 
-            // Step labels
+            // Step labels and restart button
             Column(
                 Modifier
                     .align(Alignment.BottomCenter)
                     .padding(bottom = 48.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(stepLabel(currentStep.type), fontSize = 30.sp, color = Color.White)
-                Text(
-                    text = "Cycle $currentCycle / ${training.cycles}" + if (isInfiniteCycle) " (∞)" else "",
-                    fontSize = 16.sp,
-                    color = Color.White.copy(alpha = 0.7f)
-                )
+                if (isRunning) {
+                    Text(stepLabel(currentStep.type), fontSize = 30.sp, color = Color.White)
+                    Text(
+                        text = "Cycle $currentCycle / ${training.cycles}" + if (isInfiniteCycle) " (∞)" else "",
+                        fontSize = 16.sp,
+                        color = Color.White.copy(alpha = 0.7f)
+                    )
+                } else {
+                    Text("Exercise Complete!", fontSize = 28.sp, color = Color.White)
+                    TextButton(onClick = {
+                        currentStepIndex = 0
+                        currentCycle = 1
+                        isRunning = true
+                        countdown = 3
+                        isCountdownFinished = false
+                        startExercise = !startExercise
+                    }) {
+                        Text("Restart Exercise", fontSize = 16.sp, color = Color.White)
+                    }
+                }
             }
 
-            // ---------- COUNTDOWN OVERLAY ----------
+            // Countdown overlay
             if (!isCountdownFinished) {
                 Box(
                     Modifier
@@ -306,35 +320,72 @@ fun PulsatingRadialBackground(baseColor: Color, scaleFactor: Float) {
 @Composable
 fun FloatingParticles(particles: List<Particle>, baseColor: Color) {
     val infiniteTransition = rememberInfiniteTransition()
-    val animatedOffsets = particles.map { particle ->
-        infiniteTransition.animateFloat(
+
+    val animatedParticles = particles.map { particle ->
+        val animatedY = infiniteTransition.animateFloat(
             initialValue = particle.offset.y,
             targetValue = 1f,
             animationSpec = infiniteRepeatable(
                 animation = tween(
-                    durationMillis = (2000 / particle.speed).toInt(),
+                    durationMillis = (4000 / particle.speed).toInt(),
                     easing = LinearEasing
                 ),
                 repeatMode = RepeatMode.Restart
             )
         )
+        val animatedX = infiniteTransition.animateFloat(
+            initialValue = particle.offset.x,
+            targetValue = particle.offset.x + Random.nextFloat() * 0.1f - 0.05f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(
+                    durationMillis = (5000 / particle.speed).toInt(),
+                    easing = LinearEasing
+                ),
+                repeatMode = RepeatMode.Reverse
+            )
+        )
+        val animatedAlpha = infiniteTransition.animateFloat(
+            initialValue = 0.2f,
+            targetValue = 0.7f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(3000, easing = FastOutSlowInEasing),
+                repeatMode = RepeatMode.Reverse
+            )
+        )
+        val animatedSize = infiniteTransition.animateFloat(
+            initialValue = particle.size,
+            targetValue = particle.size * (0.5f + Random.nextFloat()),
+            animationSpec = infiniteRepeatable(
+                animation = tween(2500, easing = FastOutSlowInEasing),
+                repeatMode = RepeatMode.Reverse
+            )
+        )
+
+        Triple(animatedX, animatedY, Pair(animatedSize, animatedAlpha))
     }
 
     Canvas(modifier = Modifier.fillMaxSize()) {
         val centerX = size.width / 2
         val centerY = size.height / 2
 
-        particles.forEachIndexed { index, particle ->
-            val y = animatedOffsets[index].value * size.height
-            val x = particle.offset.x * size.width
+        animatedParticles.forEachIndexed { index, triple ->
+            val (xAnim, yAnim, sizeAlpha) = triple
+            val (radiusAnim, alphaAnim) = sizeAlpha
+            val x = xAnim.value * size.width
+            val y = yAnim.value * size.height
+            val radius = radiusAnim.value
+            val alpha = alphaAnim.value
+
             drawCircle(
-                color = baseColor.copy(alpha = 0.4f),
-                radius = particle.size,
+                color = baseColor.copy(alpha = alpha),
+                radius = radius,
                 center = Offset(centerX + x - size.width / 2, centerY + y - size.height / 2)
             )
         }
     }
+
 }
+
 
 private fun HapticFeedback.vibrateShortly() {
     performHapticFeedback(HapticFeedbackType.Confirm)
