@@ -67,13 +67,14 @@ fun ExerciseScreen(
     }
 
     val haptics = LocalHapticFeedback.current
-    val trainingWithColor by viewModel.training.collectAsState()
-    val training = trainingWithColor?.training ?: run {
+    val trainingUiModel by viewModel.training.collectAsState()
+    val training = trainingUiModel?.training ?: run {
         LoadingScreen()
         return
     }
 
-    val baseColor = trainingWithColor!!.color.toColor()
+    val baseColor = trainingUiModel!!.color.toColor()
+    val isInfiniteCycle = trainingUiModel!!.isInfiniteCycle
 
     var currentStepIndex by remember { mutableIntStateOf(0) }
     var currentCycle by remember { mutableIntStateOf(1) }
@@ -125,7 +126,6 @@ fun ExerciseScreen(
     LaunchedEffect(currentStepIndex, currentCycle, isCountdownFinished) {
         if (!isCountdownFinished || !isRunning) return@LaunchedEffect
 
-        // Slight pause to separate steps (feels more natural)
         delay(500)
 
         when (currentStep.type) {
@@ -161,9 +161,16 @@ fun ExerciseScreen(
         }
 
         val lastStep = currentStepIndex == training.steps.lastIndex
+
         if (lastStep) {
             if (currentCycle == training.cycles) {
-                isRunning = false
+                if (isInfiniteCycle) {
+                    // Repeat indefinitely
+                    currentCycle = 1
+                    currentStepIndex = 0
+                } else {
+                    isRunning = false
+                }
             } else {
                 currentCycle++
                 currentStepIndex = 0
@@ -198,10 +205,7 @@ fun ExerciseScreen(
                 },
                 actions = {
                     IconButton(onClick = { showInfoDialog = true }) {
-                        Icon(
-                            Icons.Default.Info,
-                            contentDescription = "Info"
-                        )
+                        Icon(Icons.Default.Info, contentDescription = "Info")
                     }
                 }
             )
@@ -236,7 +240,7 @@ fun ExerciseScreen(
             ) {
                 Text(stepLabel(currentStep.type), fontSize = 30.sp, color = Color.White)
                 Text(
-                    text = "Cycle $currentCycle / ${training.cycles}",
+                    text = "Cycle $currentCycle / ${training.cycles}" + if (isInfiniteCycle) " (∞)" else "",
                     fontSize = 16.sp,
                     color = Color.White.copy(alpha = 0.7f)
                 )

@@ -57,7 +57,10 @@ fun AppNavigation() {
 
         composable("home") {
             val viewModel = remember {
-                HomeViewModel(observeTrainingsUseCase = AppContainer.observeTrainingsUseCase)
+                HomeViewModel(
+                    trainingsRepository = AppContainer.trainingsRepository,
+                    preferencesRepository = AppContainer.preferencesRepository
+                )
             }
 
             HomeScreen(
@@ -73,7 +76,10 @@ fun AppNavigation() {
                 ?: return@composable
 
             val viewModel = remember {
-                ExerciseViewModel(observeTrainingsUseCase = AppContainer.observeTrainingsUseCase)
+                ExerciseViewModel(
+                    trainingsRepository = AppContainer.trainingsRepository,
+                    preferencesRepository = AppContainer.preferencesRepository
+                )
             }
 
             ExerciseScreen(

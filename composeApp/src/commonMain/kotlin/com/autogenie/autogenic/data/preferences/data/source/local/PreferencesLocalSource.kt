@@ -11,7 +11,5 @@ interface PreferencesLocalSource {
 
     suspend fun setTheme(id: String)
 
-    suspend fun setCycleCount(count: Int)
-
     suspend fun setInfiniteCycle(infinite: Boolean)
 }

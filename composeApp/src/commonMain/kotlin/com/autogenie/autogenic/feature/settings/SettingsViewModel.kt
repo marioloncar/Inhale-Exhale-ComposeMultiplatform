@@ -29,7 +29,6 @@ class SettingsViewModel(
                         SettingsUiState(
                             availableThemes = availableThemes,
                             selectedThemeId = userData.selectedTheme.first,
-                            cycleCount = userData.selectedCycleCount,
                             isInfiniteCycle = userData.useInfiniteCycles
                         )
                     )
@@ -40,12 +39,6 @@ class SettingsViewModel(
     fun setTheme(id: String) {
         viewModelScope.launch {
             preferencesRepository.setTheme(id)
-        }
-    }
-
-    fun setCycleCount(count: Int) {
-        viewModelScope.launch {
-            preferencesRepository.setCycleCount(count)
         }
     }
 

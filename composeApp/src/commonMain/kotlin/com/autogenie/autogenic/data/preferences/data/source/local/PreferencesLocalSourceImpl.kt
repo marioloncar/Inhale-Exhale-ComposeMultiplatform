@@ -55,7 +55,6 @@ class PreferencesLocalSourceImpl(
 
     private companion object {
         val KEY_THEME = stringPreferencesKey("selected_theme_name")
-        val KEY_CYCLE_COUNT = intPreferencesKey("selected_cycle_count")
         val KEY_INFINITE = booleanPreferencesKey("use_infinite_cycles")
     }
 
@@ -63,14 +62,12 @@ class PreferencesLocalSourceImpl(
         return dataStore.data.map { prefs ->
 
             val themeName = prefs[KEY_THEME] ?: colorSets.keys.first()
-            val cycleCount = prefs[KEY_CYCLE_COUNT] ?: 1
             val infiniteCycles = prefs[KEY_INFINITE] ?: false
 
             val colors = colorSets[themeName].orEmpty()
 
             UserData(
                 selectedTheme = themeName to colors,
-                selectedCycleCount = cycleCount,
                 useInfiniteCycles = infiniteCycles
             )
         }
@@ -83,12 +80,6 @@ class PreferencesLocalSourceImpl(
     override suspend fun setTheme(id: String) {
         dataStore.edit { prefs ->
             prefs[KEY_THEME] = id
-        }
-    }
-
-    override suspend fun setCycleCount(count: Int) {
-        dataStore.edit { prefs ->
-            prefs[KEY_CYCLE_COUNT] = count
         }
     }
 

@@ -222,7 +222,10 @@ fun SectionTitle(title: String) {
 @Composable
 fun HomeScreenPreview() {
     HomeScreen(
-        viewModel = HomeViewModel(AppContainer.observeTrainingsUseCase),
+        viewModel = HomeViewModel(
+            trainingsRepository = AppContainer.trainingsRepository,
+            preferencesRepository = AppContainer.preferencesRepository
+        ),
         onExerciseClick = {},
         onSettingsClick = {},
         onGetStartedClick = {}

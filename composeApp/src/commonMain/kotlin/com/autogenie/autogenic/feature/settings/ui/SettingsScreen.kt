@@ -109,14 +109,6 @@ fun SettingsScreen(
             // =============================
             // 🔵 CYCLE COUNT SETTING
             // =============================
-            CycleCountSetting(
-                count = uiState.cycleCount,
-                onIncrement = { viewModel.setCycleCount(uiState.cycleCount + 1) },
-                onDecrement = {
-                    if (uiState.cycleCount > 1) viewModel.setCycleCount(uiState.cycleCount - 1)
-                }
-            )
-
             InfiniteCycleSetting(
                 infinite = uiState.isInfiniteCycle,
                 onToggle = { viewModel.setInfiniteCycle(!uiState.isInfiniteCycle) }

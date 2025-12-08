@@ -21,10 +21,6 @@ class PreferencesRepositoryImpl(
         preferencesLocalSource.setTheme(id)
     }
 
-    override suspend fun setCycleCount(count: Int) {
-        preferencesLocalSource.setCycleCount(count)
-    }
-
     override suspend fun setInfiniteCycle(infinite: Boolean) {
         preferencesLocalSource.setInfiniteCycle(infinite)
     }
