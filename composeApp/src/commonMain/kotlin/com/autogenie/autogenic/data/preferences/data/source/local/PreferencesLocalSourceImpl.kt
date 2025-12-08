@@ -33,19 +33,19 @@ private val colorSets = mapOf(
         "#FF66BB6A",
         "#FFC8E6C9"
     ),
-    "Midnight" to listOf(
-        "#FF212121",
-        "#FF424242",
-        "#FF37474F",
-        "#FF607D8B",
-        "#FF90A4AE"
-    ),
     "Candy Pop" to listOf(
         "#FFE91E63",
         "#FFFF4081",
         "#FFFFC107",
         "#FFFFEB3B",
         "#FFCDDC39"
+    ),
+    "Morning Mist" to listOf(
+        "#FFDCE3F2",
+        "#FFB0C4DE",
+        "#FF9BB7D4",
+        "#FF7DA3C7",
+        "#FF5E8FB9"
     )
 )
 
