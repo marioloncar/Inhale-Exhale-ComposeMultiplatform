@@ -58,11 +58,11 @@ kotlin {
 }
 
 android {
-    namespace = "com.autogenie.autogenie"
+    namespace = "com.autogenie.inhaleexhale"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "com.autogenie.autogenie"
+        applicationId = "com.autogenie.inhaleexhale"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1

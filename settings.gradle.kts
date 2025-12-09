@@ -1,4 +1,4 @@
-rootProject.name = "autogenie"
+rootProject.name = "inhaleexhale"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
