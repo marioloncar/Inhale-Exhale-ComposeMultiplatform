@@ -2,14 +2,33 @@ package com.autogenie.autogenic.feature.home.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Book
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -21,6 +40,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.autogenie.autogenic.AppContainer
+import com.autogenie.autogenic.core.util.toColor
 import com.autogenie.autogenic.feature.home.HomeViewModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -99,22 +119,6 @@ fun HomeScreen(
     }
 }
 
-// ---------------------
-// Helper function
-// ---------------------
-fun String.toColor(): Color {
-    val hex = this.removePrefix("#")
-    val colorLong = when (hex.length) {
-        6 -> "FF$hex".toLong(16)
-        8 -> hex.toLong(16)
-        else -> throw IllegalArgumentException("Invalid color format: $this")
-    }
-    return Color(colorLong)
-}
-
-// ---------------------
-// Exercise Card
-// ---------------------
 @Composable
 fun Exercise(
     title: String,
@@ -164,9 +168,6 @@ fun Exercise(
     }
 }
 
-// ---------------------
-// Get Started Banner
-// ---------------------
 @Composable
 fun GetStartedBanner(title: String, color: Color, onClick: () -> Unit) {
     Box(
@@ -198,9 +199,6 @@ fun GetStartedBanner(title: String, color: Color, onClick: () -> Unit) {
     }
 }
 
-// ---------------------
-// Section Title
-// ---------------------
 @Composable
 fun SectionTitle(title: String) {
     Text(
@@ -210,9 +208,6 @@ fun SectionTitle(title: String) {
     )
 }
 
-// ---------------------
-// Preview
-// ---------------------
 @Preview
 @Composable
 fun HomeScreenPreview() {

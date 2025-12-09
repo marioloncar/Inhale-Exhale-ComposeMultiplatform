@@ -6,6 +6,8 @@ import com.autogenie.autogenic.data.preferences.domain.PreferencesRepository
 import com.autogenie.autogenic.data.trainings.domain.TrainingsRepository
 import com.autogenie.autogenic.data.trainings.domain.model.Training
 import com.autogenie.autogenic.feature.home.ui.model.HomeUiState
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -21,7 +23,7 @@ class HomeViewModel(
     val uiState: StateFlow<HomeUiState> = _uiState
 
     init {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             combine(
                 trainingsRepository.trainings(),
                 preferencesRepository.observeUserData().map { it.selectedTheme.second }

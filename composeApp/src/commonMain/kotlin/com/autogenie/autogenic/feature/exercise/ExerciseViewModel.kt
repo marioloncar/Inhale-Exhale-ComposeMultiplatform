@@ -6,6 +6,9 @@ import com.autogenie.autogenic.data.preferences.data.model.UserData
 import com.autogenie.autogenic.data.preferences.domain.PreferencesRepository
 import com.autogenie.autogenic.data.trainings.domain.TrainingsRepository
 import com.autogenie.autogenic.data.trainings.domain.model.Training
+import com.autogenie.autogenic.feature.exercise.ui.model.ExerciseUiState
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -16,11 +19,11 @@ class ExerciseViewModel(
     private val preferencesRepository: PreferencesRepository,
 ) : ViewModel() {
 
-    private val _training = MutableStateFlow<TrainingUiModel?>(null)
-    val training: StateFlow<TrainingUiModel?> = _training
+    private val _training = MutableStateFlow<ExerciseUiState?>(null)
+    val training: StateFlow<ExerciseUiState?> = _training
 
     fun loadExercise(id: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             combine(
                 trainingsRepository.trainings(),
                 preferencesRepository.observeUserData()
@@ -29,7 +32,7 @@ class ExerciseViewModel(
                 val colors = userData.selectedTheme.second
 
                 trainings.mapIndexed { index, training ->
-                    TrainingUiModel(
+                    ExerciseUiState(
                         training = training,
                         color = colors[index % colors.size],
                         isInfiniteCycle = userData.useInfiniteCycles
@@ -41,10 +44,4 @@ class ExerciseViewModel(
                 }
         }
     }
-
-    data class TrainingUiModel(
-        val training: Training,
-        val color: String,
-        val isInfiniteCycle: Boolean
-    )
 }

@@ -14,25 +14,21 @@ class TrainingsRepositoryImpl(
     val trainingsRemoteSource: TrainingsRemoteSource
 ) : TrainingsRepository {
 
-    override fun trainings(): Flow<List<Training>> {
-        return flow {
-            emit(trainingsRemoteSource.fetchTrainings().map(TrainingDto::toDomain))
-        }
+    override fun trainings(): Flow<List<Training>> = flow {
+        emit(trainingsRemoteSource.fetchTrainings().map(TrainingDto::toDomain))
     }
 }
 
-private fun TrainingDto.toDomain(): Training =
-    Training(
-        id = id,
-        name = name,
-        summary = summary,
-        description = description,
-        cycles = cycles,
-        steps = steps.map { it.toDomain() }
-    )
+private fun TrainingDto.toDomain(): Training = Training(
+    id = id,
+    name = name,
+    summary = summary,
+    description = description,
+    cycles = cycles,
+    steps = steps.map { it.toDomain() }
+)
 
-private fun StepDto.toDomain(): TrainingStep =
-    TrainingStep(
-        type = StepType.valueOf(type.uppercase()),
-        duration = duration
-    )
+private fun StepDto.toDomain(): TrainingStep = TrainingStep(
+    type = StepType.valueOf(type.uppercase()),
+    duration = duration
+)

@@ -14,8 +14,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
-        TTS.initialize(this)
-        AppContainer.initialize(createDataStore(applicationContext))
+        TTS.initialize(platformContext = this)
+        AppContainer.initialize(dataStore = createDataStore(applicationContext))
 
         setContent {
             App()

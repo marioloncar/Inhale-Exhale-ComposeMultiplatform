@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.autogenie.autogenic.data.preferences.domain.PreferencesRepository
 import com.autogenie.autogenic.feature.settings.ui.model.SettingsUiState
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
@@ -17,7 +19,7 @@ class SettingsViewModel(
     val uiState = _uiState.asStateFlow()
 
     init {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             combine(
                 preferencesRepository.observeAvailableThemes(),
                 preferencesRepository.observeUserData(),
