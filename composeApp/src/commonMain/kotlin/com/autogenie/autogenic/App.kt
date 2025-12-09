@@ -125,7 +125,6 @@ fun SplashScreen(onFinished: () -> Unit) {
 
     val infinite = rememberInfiniteTransition()
 
-    // Core breathing pulse
     val pulse by infinite.animateFloat(
         initialValue = 0.7f,
         targetValue = 1.25f,
@@ -135,7 +134,6 @@ fun SplashScreen(onFinished: () -> Unit) {
         )
     )
 
-    // Rotate aura ring
     val rotation by infinite.animateFloat(
         initialValue = 0f,
         targetValue = 360f,
@@ -145,7 +143,6 @@ fun SplashScreen(onFinished: () -> Unit) {
         )
     )
 
-    // Subtle color shift
     val colorShift by infinite.animateFloat(
         initialValue = 0f,
         targetValue = 1f,
@@ -158,11 +155,11 @@ fun SplashScreen(onFinished: () -> Unit) {
     val primary = MaterialTheme.colorScheme.primary
     val dynamicColor = lerp(primary, primary.copy(alpha = 0.5f), colorShift)
 
-    // End splash
+    // shorter splash duration
     LaunchedEffect(Unit) {
-        delay(3100)
+        delay(1600)
         visible = false
-        delay(400)
+        delay(200)
         onFinished()
     }
 
@@ -175,12 +172,11 @@ fun SplashScreen(onFinished: () -> Unit) {
         Canvas(modifier = Modifier.fillMaxSize()) {
             val center = Offset(size.width / 2, size.height / 2)
 
-            // Floating particles
             repeat(18) { i ->
-                val angle = (i * 20 + rotation) * (3.14 / 180f)
+                val angle = (i * 20 + rotation) * (3.14f / 180f)
                 val radius = (i % 5 + 1) * 60f * pulse
-                val x = center.x + cos(angle).toFloat() * radius
-                val y = center.y + sin(angle).toFloat() * radius
+                val x = center.x + cos(angle) * radius
+                val y = center.y + sin(angle) * radius
 
                 drawCircle(
                     color = dynamicColor.copy(alpha = 0.12f),
@@ -189,19 +185,14 @@ fun SplashScreen(onFinished: () -> Unit) {
                 )
             }
 
-            // Outer glow
             drawCircle(
                 brush = Brush.radialGradient(
-                    listOf(
-                        dynamicColor.copy(alpha = 0.25f),
-                        Color.Transparent
-                    )
+                    listOf(dynamicColor.copy(alpha = 0.25f), Color.Transparent)
                 ),
                 radius = 380f * pulse,
                 center = center
             )
 
-            // Nebula ring (rotating)
             rotate(rotation, center) {
                 drawCircle(
                     brush = Brush.sweepGradient(
@@ -217,7 +208,6 @@ fun SplashScreen(onFinished: () -> Unit) {
                 )
             }
 
-            // Core breathing orb
             drawCircle(
                 brush = Brush.radialGradient(
                     listOf(
@@ -232,3 +222,4 @@ fun SplashScreen(onFinished: () -> Unit) {
         }
     }
 }
+
