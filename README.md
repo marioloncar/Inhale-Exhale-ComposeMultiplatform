@@ -3,8 +3,6 @@
 A simple, calming breathing exercise app built with **Kotlin Multiplatform**, running on both **Android** and **iOS**.  
 It guides users through inhale, exhale, and hold cycles using smooth animations, haptic feedback, and text-to-speech.
 
----
-
 ## Features
 
 ### 🫁 Breathing Flow
@@ -28,8 +26,6 @@ It guides users through inhale, exhale, and hold cycles using smooth animations,
 - Jetpack Compose for UI
 - Coroutines + Flow for reactive state
 - MVVM
-
----
 
 ## Tech Stack
 
