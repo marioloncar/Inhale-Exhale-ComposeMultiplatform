@@ -6,4 +6,6 @@ import kotlinx.coroutines.flow.Flow
 interface TrainingsRepository {
 
     fun trainings(): Flow<List<Training>>
+
+    fun training(id: String): Flow<Training?>
 }

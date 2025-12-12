@@ -107,4 +107,8 @@ class TrainingsRemoteSourceImpl : TrainingsRemoteSource {
     override suspend fun fetchTrainings(): List<TrainingDto> {
         return Json.decodeFromString(trainingsJson)
     }
+
+    override suspend fun fetchTraining(id: String): TrainingDto? {
+        return fetchTrainings().find { training -> training.id == id }
+    }
 }

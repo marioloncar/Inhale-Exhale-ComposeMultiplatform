@@ -17,6 +17,10 @@ class TrainingsRepositoryImpl(
     override fun trainings(): Flow<List<Training>> = flow {
         emit(trainingsRemoteSource.fetchTrainings().map(TrainingDto::toDomain))
     }
+
+    override fun training(id: String): Flow<Training?> {
+        return training(id)
+    }
 }
 
 private fun TrainingDto.toDomain(): Training = Training(

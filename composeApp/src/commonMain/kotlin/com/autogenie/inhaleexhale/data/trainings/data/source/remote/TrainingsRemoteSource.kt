@@ -5,4 +5,6 @@ import com.autogenie.inhaleexhale.data.trainings.data.source.remote.model.Traini
 interface TrainingsRemoteSource {
 
     suspend fun fetchTrainings(): List<TrainingDto>
+
+    suspend fun fetchTraining(id: String): TrainingDto?
 }
