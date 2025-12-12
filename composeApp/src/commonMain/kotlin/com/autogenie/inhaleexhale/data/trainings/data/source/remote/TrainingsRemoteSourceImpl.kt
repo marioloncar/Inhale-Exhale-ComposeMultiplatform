@@ -68,28 +68,6 @@ class TrainingsRemoteSourceImpl : TrainingsRemoteSource {
     ]
   },
   {
-    "id": "5_5_relaxation",
-    "name": "5-5 Relaxation Breathing",
-    "summary": "A simple pattern for quick calm.",
-    "description": "This gentle 5-5 pattern is easy to follow and helps the body settle into a relaxed state. It promotes steady breathing and smooth rhythm while reducing mild stress. Perfect for beginners or anyone needing a quick calming reset.",
-    "cycles": 6,
-    "steps": [
-      { "type": "inhale", "duration": 5 },
-      { "type": "exhale", "duration": 5 }
-    ]
-  },
-  {
-    "id": "equal_breathing",
-    "name": "Equal Breathing",
-    "summary": "Balanced inhale–exhale for clarity.",
-    "description": "Equal breathing uses a consistent inhale and exhale to foster stability and mental clarity. This pattern supports mindfulness by smoothing the breath and quieting internal noise. It’s a versatile technique suitable for focus, meditation, or general relaxation.",
-    "cycles": 8,
-    "steps": [
-      { "type": "inhale", "duration": 4 },
-      { "type": "exhale", "duration": 4 }
-    ]
-  },
-  {
     "id": "energizing",
     "name": "Energizing Breath",
     "summary": "Short exhales for a quick energy boost.",
