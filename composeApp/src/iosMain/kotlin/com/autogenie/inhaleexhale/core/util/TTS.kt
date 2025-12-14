@@ -15,6 +15,8 @@ actual object TTS {
         val utterance = AVSpeechUtterance(string = text)
         utterance.rate = AVSpeechUtteranceDefaultSpeechRate
         utterance.voice = AVSpeechSynthesisVoice.voiceWithLanguage("en-US")
+        utterance.rate = 0.42f
+        utterance.pitchMultiplier = 1.08f
         synthesizer.speakUtterance(utterance)
     }
 
