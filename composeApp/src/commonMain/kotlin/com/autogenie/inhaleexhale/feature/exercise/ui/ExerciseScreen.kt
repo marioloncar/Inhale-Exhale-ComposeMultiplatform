@@ -34,6 +34,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,6 +54,7 @@ import com.autogenie.inhaleexhale.core.util.toColor
 import com.autogenie.inhaleexhale.data.trainings.domain.model.StepType
 import com.autogenie.inhaleexhale.feature.exercise.ExerciseViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -65,6 +67,7 @@ fun ExerciseScreen(
     LaunchedEffect(exerciseId) { viewModel.loadExercise(exerciseId) }
 
     val haptics = LocalHapticFeedback.current
+    val scope = rememberCoroutineScope()
     val trainingUiModel by viewModel.training.collectAsState()
     val training = trainingUiModel?.training ?: run {
         LoadingScreen()
@@ -99,15 +102,20 @@ fun ExerciseScreen(
 
     val scale = remember { Animatable(1f) }
 
-    val subtlePulse = rememberInfiniteTransition()
-    val pulse by subtlePulse.animateFloat(
-        initialValue = 0.95f,
-        targetValue = 1.05f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(2000, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        )
-    )
+    val pulse: Float = if (isRunning) {
+        val subtlePulse = rememberInfiniteTransition(label = "SubtlePulseTransition")
+        subtlePulse.animateFloat(
+            initialValue = 0.95f,
+            targetValue = 1.05f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(2000, easing = FastOutSlowInEasing),
+                repeatMode = RepeatMode.Reverse
+            ),
+            label = "PulseAnimation"
+        ).value
+    } else {
+        1.0f
+    }
 
     val particles = remember {
         List(20) {
@@ -119,8 +127,7 @@ fun ExerciseScreen(
         }
     }
 
-    // ---------- BREATHING LOGIC ----------
-    LaunchedEffect(currentStepIndex, currentCycle, isCountdownFinished) {
+    LaunchedEffect(currentStepIndex, currentCycle, isCountdownFinished, isRunning) {
         if (!isCountdownFinished || !isRunning) return@LaunchedEffect
 
         delay(500)
@@ -164,6 +171,7 @@ fun ExerciseScreen(
                     currentStepIndex = 0
                 } else {
                     isRunning = false
+                    scale.snapTo(1f)
                 }
             } else {
                 currentCycle++
@@ -211,11 +219,9 @@ fun ExerciseScreen(
             contentAlignment = Alignment.Center
         ) {
 
-            // Background layers
             PulsatingRadialBackground(baseColor = baseColor, scaleFactor = scale.value)
             FloatingParticles(particles = particles, baseColor = baseColor)
 
-            // Main orb
             Box(
                 modifier = Modifier
                     .size(260.dp)
@@ -224,7 +230,6 @@ fun ExerciseScreen(
                     .blur(8.dp)
             )
 
-            // Step labels and restart button
             Column(
                 Modifier
                     .align(Alignment.BottomCenter)
@@ -239,8 +244,13 @@ fun ExerciseScreen(
                         color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
                     )
                 } else {
+                    TTS.speak("Exercise complete")
                     Text("Exercise Complete!", fontSize = 28.sp, color = MaterialTheme.colorScheme.onBackground)
                     TextButton(onClick = {
+                        scope.launch {
+                            scale.snapTo(1f)
+                        }
+
                         currentStepIndex = 0
                         currentCycle = 1
                         isRunning = true
@@ -253,7 +263,6 @@ fun ExerciseScreen(
                 }
             }
 
-            // Countdown overlay
             if (!isCountdownFinished) {
                 Box(
                     Modifier

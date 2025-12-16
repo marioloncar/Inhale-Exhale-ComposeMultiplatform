@@ -2,20 +2,20 @@ package com.autogenie.inhaleexhale.feature.home.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Book
@@ -29,6 +29,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -36,8 +37,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.autogenie.inhaleexhale.AppContainer
 import com.autogenie.inhaleexhale.core.util.toColor
@@ -53,66 +54,129 @@ fun HomeScreen(
     onGetStartedClick: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val scrollState = rememberScrollState()
+
+    val primaryColor = uiState.trainings.firstOrNull()?.color?.toColor() ?: MaterialTheme.colorScheme.primary
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = "Inhale - Exhale",
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-                actions = {
-                    IconButton(onClick = onSettingsClick) {
-                        Icon(
-                            imageVector = Icons.Default.Settings,
-                            contentDescription = "Settings"
-                        )
-                    }
-                }
+            MinimalFloatingTopBar(
+                title = "Inhale - Exhale",
+                onSettingsClick = onSettingsClick
             )
         }
     ) { paddingValues ->
-        LazyColumn(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            contentPadding = PaddingValues(bottom = 32.dp)
+                .padding(paddingValues)
         ) {
-            item {
-                val bannerColor = uiState.trainings.firstOrNull()?.color?.toColor() ?: Color(0xFF2196F3)
-                GetStartedBanner(title = "Get Started", color = bannerColor, onClick = onGetStartedClick)
+            FloatingGetStartedAction(primaryColor = primaryColor, onClick = onGetStartedClick)
+
+            SectionTitle(title = "Breathing Flow", modifier = Modifier.padding(top = 16.dp))
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(scrollState)
+                    .padding(vertical = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                Spacer(modifier = Modifier.width(24.dp - 16.dp))
+
+                uiState.trainings.forEach { training ->
+                    FlowExerciseCard(
+                        title = training.training.name,
+                        description = training.training.summary,
+                        color = training.color.toColor(),
+                        onClick = { onExerciseClick(training.training.id) }
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(24.dp - 16.dp))
             }
 
-            item {
-                SectionTitle(title = "Breathing exercises")
+
+
+            Spacer(modifier = Modifier.height(32.dp))
+        }
+    }
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+fun MinimalFloatingTopBar(title: String, onSettingsClick: () -> Unit) {
+    TopAppBar(
+        title = {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+        },
+        actions = {
+            IconButton(onClick = onSettingsClick) {
+                Icon(
+                    imageVector = Icons.Default.Settings,
+                    contentDescription = "Settings",
+                    tint = MaterialTheme.colorScheme.onBackground
+                )
             }
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = Color.Transparent,
+            scrolledContainerColor = Color.Transparent
+        )
+    )
+}
 
-            items(uiState.trainings.chunked(2)) { rowTrainings ->
-                BoxWithConstraints(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                ) {
-                    val spacing = 16.dp
-                    val totalSpacing = spacing * (rowTrainings.size - 1)
-                    val cardWidth = (maxWidth - totalSpacing) / rowTrainings.size
-
-                    Row(horizontalArrangement = Arrangement.spacedBy(spacing)) {
-                        rowTrainings.forEach { training ->
-                            Exercise(
-                                title = training.training.name,
-                                description = training.training.summary,
-                                color = training.color.toColor(),
-                                width = cardWidth,
-                                onClick = { onExerciseClick(training.training.id) }
-                            )
-                        }
-                    }
+@Composable
+fun FloatingGetStartedAction(primaryColor: Color, onClick: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp, vertical = 16.dp)
+            .clickable { onClick() }
+            .graphicsLayer {
+                shadowElevation = 8f
+                shape = RoundedCornerShape(24.dp)
+                clip = true
+            },
+        shape = RoundedCornerShape(24.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    brush = Brush.linearGradient(
+                        colors = listOf(primaryColor.copy(alpha = 0.95f), primaryColor.copy(alpha = 0.7f))
+                    )
+                )
+                .padding(20.dp)
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.Default.Book,
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Column {
+                    Text(
+                        text = "Breathing Tutorial & Guide",
+                        color = Color.White,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "Learn the basics and how to use the app.",
+                        color = Color.White.copy(alpha = 0.8f),
+                        style = MaterialTheme.typography.bodySmall
+                    )
                 }
             }
         }
@@ -120,91 +184,79 @@ fun HomeScreen(
 }
 
 @Composable
-fun Exercise(
+fun FlowExerciseCard(
     title: String,
     description: String,
     color: Color,
-    width: Dp,
     onClick: () -> Unit
 ) {
-    val gradient = Brush.linearGradient(
+    val gradient = Brush.verticalGradient(
         colors = listOf(
             color.copy(alpha = 1.0f),
-            color.copy(alpha = 0.3f)
+            color.copy(alpha = 0.5f)
         )
     )
 
     Card(
         modifier = Modifier
-            .width(width)
-            .height(140.dp)
+            .width(200.dp)
+            .height(280.dp)
             .clickable { onClick() },
         shape = RoundedCornerShape(24.dp),
-        elevation = CardDefaults.cardElevation(4.dp)
+        elevation = CardDefaults.cardElevation(8.dp)
     ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(gradient)
-                .padding(12.dp)
+                .padding(16.dp)
         ) {
+            Box(
+                modifier = Modifier
+                    .size(60.dp)
+                    .align(Alignment.BottomEnd)
+                    .background(color.copy(alpha = 0.3f), CircleShape)
+            )
+
             Column(
                 modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.SpaceEvenly
+                verticalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 2
+                Icon(
+                    imageVector = Icons.Default.Book,
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier.size(24.dp)
                 )
-                Text(
-                    text = description,
-                    style = MaterialTheme.typography.bodySmall,
-                    maxLines = 3
-                )
+
+                Column {
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White,
+                        maxLines = 2
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = description,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.White.copy(alpha = 0.8f),
+                        maxLines = 4
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
-fun GetStartedBanner(title: String, color: Color, onClick: () -> Unit) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-            .background(
-                brush = Brush.linearGradient(
-                    colors = listOf(color.copy(alpha = 0.9f), color.copy(alpha = 0.6f))
-                ),
-                shape = RoundedCornerShape(24.dp)
-            )
-            .clickable { onClick() }
-            .padding(16.dp)
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-                imageVector = Icons.Default.Book,
-                contentDescription = null,
-                tint = Color.White
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = title,
-                color = Color.White,
-                style = MaterialTheme.typography.titleMedium
-            )
-        }
-    }
-}
-
-@Composable
-fun SectionTitle(title: String) {
+fun SectionTitle(title: String, modifier: Modifier = Modifier) {
     Text(
         text = title,
         style = MaterialTheme.typography.titleLarge,
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+        fontWeight = FontWeight.SemiBold,
+        modifier = modifier.padding(horizontal = 24.dp, vertical = 8.dp)
     )
 }
 

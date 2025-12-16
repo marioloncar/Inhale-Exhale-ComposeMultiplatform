@@ -186,7 +186,7 @@ fun TutorialScreen(onBackClick: () -> Unit) {
 
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = "You're doing great! ✨",
+                    text = "✨You're building resilience with every breath! ✨",
                     fontSize = 16.sp,
                     color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Medium

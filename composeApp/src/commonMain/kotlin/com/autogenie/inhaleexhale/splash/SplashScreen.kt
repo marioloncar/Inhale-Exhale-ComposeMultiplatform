@@ -1,7 +1,6 @@
 package com.autogenie.inhaleexhale.splash
 
 import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
@@ -23,12 +22,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.lerp
-import kotlinx.coroutines.delay
-import kotlin.math.cos
-import kotlin.math.sin
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun SplashScreen(onFinished: () -> Unit) {
@@ -39,43 +34,26 @@ fun SplashScreen(onFinished: () -> Unit) {
         animationSpec = tween(500, easing = FastOutSlowInEasing),
         finishedListener = {
             if (fadeOut) onFinished()
-        }
+        },
+        label = "AlphaFadeOut"
     )
 
-    val infinite = rememberInfiniteTransition()
+    val infinite = rememberInfiniteTransition(label = "BreathingPulseTransition")
 
     val pulse by infinite.animateFloat(
-        initialValue = 0.7f,
-        targetValue = 1.25f,
+        initialValue = 0.6f,
+        targetValue = 1.3f,
         animationSpec = infiniteRepeatable(
-            tween(2400, easing = FastOutSlowInEasing),
-            RepeatMode.Reverse
-        )
+            animation = tween(2400, easing = FastOutSlowInEasing), // Breathing duration
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "PulseAnimation"
     )
 
-    val rotation by infinite.animateFloat(
-        initialValue = 0f,
-        targetValue = 360f,
-        animationSpec = infiniteRepeatable(
-            tween(6000, easing = LinearEasing),
-            RepeatMode.Restart
-        )
-    )
-
-    val colorShift by infinite.animateFloat(
-        initialValue = 0f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            tween(3000, easing = FastOutSlowInEasing),
-            RepeatMode.Reverse
-        )
-    )
-
-    val primary = MaterialTheme.colorScheme.primary
-    val dynamicColor = lerp(primary, primary.copy(alpha = 0.5f), colorShift)
+    val primaryColor = MaterialTheme.colorScheme.primary
 
     LaunchedEffect(Unit) {
-        delay(1400) // splash duration
+        kotlinx.coroutines.delay(2000)
         fadeOut = true
     }
 
@@ -88,51 +66,32 @@ fun SplashScreen(onFinished: () -> Unit) {
         Canvas(modifier = Modifier.fillMaxSize()) {
             val center = Offset(size.width / 2, size.height / 2)
 
-            repeat(18) { i ->
-                val angle = (i * 20 + rotation) * (3.14f / 180f)
-                val radius = (i % 5 + 1) * 60f * pulse
-                val x = center.x + cos(angle) * radius
-                val y = center.y + sin(angle) * radius
-
-                drawCircle(
-                    color = dynamicColor.copy(alpha = 0.12f),
-                    radius = (i % 3 + 1) * 4f,
-                    center = Offset(x, y)
-                )
-            }
+            val baseRadius = 150.dp.toPx()
+            val currentRadius = baseRadius * pulse
 
             drawCircle(
                 brush = Brush.radialGradient(
-                    listOf(dynamicColor.copy(alpha = 0.25f), Color.Transparent)
+                    listOf(primaryColor.copy(alpha = 0.2f), Color.Transparent)
                 ),
-                radius = 380f * pulse,
+                radius = currentRadius * 1.5f,
                 center = center
             )
 
-            rotate(rotation, center) {
-                drawCircle(
-                    brush = Brush.sweepGradient(
-                        listOf(
-                            dynamicColor.copy(alpha = 0.2f),
-                            dynamicColor.copy(alpha = 0.05f),
-                            Color.Transparent,
-                            dynamicColor.copy(alpha = 0.15f)
-                        )
-                    ),
-                    radius = 260f * pulse,
-                    center = center
-                )
-            }
+            drawCircle(
+                color = primaryColor.copy(alpha = 0.45f),
+                radius = currentRadius,
+                center = center
+            )
 
             drawCircle(
                 brush = Brush.radialGradient(
                     listOf(
-                        dynamicColor.copy(alpha = 0.45f),
-                        dynamicColor.copy(alpha = 0.1f),
+                        primaryColor.copy(alpha = 0.8f),
+                        primaryColor.copy(alpha = 0.3f),
                         Color.Transparent
                     )
                 ),
-                radius = 180f * pulse,
+                radius = currentRadius * 0.4f,
                 center = center
             )
         }

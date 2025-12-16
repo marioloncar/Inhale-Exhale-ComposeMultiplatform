@@ -1,6 +1,13 @@
 package com.autogenie.inhaleexhale.data.preferences.data.source.local.model
 
 val colorSets = mapOf(
+    "Forest Calm" to listOf(
+        "#FF4CAF50", // green
+        "#FFCDDC39", // lime
+        "#FF8D6E63", // brown
+        "#FF00BCD4", // teal
+        "#FF81C784"  // soft green
+    ),
     "Ocean Breeze" to listOf(
         "#FF2196F3", // deep blue
         "#FF00BCD4", // teal
@@ -14,13 +21,6 @@ val colorSets = mapOf(
         "#FF8E24AA", // purple
         "#FF03A9F4", // bright blue
         "#FFFF4081"  // pink
-    ),
-    "Forest Calm" to listOf(
-        "#FF4CAF50", // green
-        "#FFCDDC39", // lime
-        "#FF8D6E63", // brown
-        "#FF00BCD4", // teal
-        "#FF81C784"  // soft green
     ),
     "Candy Pop" to listOf(
         "#FFE91E63", // pink
