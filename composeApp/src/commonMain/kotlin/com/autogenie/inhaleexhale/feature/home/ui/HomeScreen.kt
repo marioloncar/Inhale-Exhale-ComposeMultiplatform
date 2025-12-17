@@ -1,5 +1,8 @@
 package com.autogenie.inhaleexhale.feature.home.ui
 
+// ... existing imports
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -17,6 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.Book
@@ -39,6 +43,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -47,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import com.autogenie.inhaleexhale.AppContainer
 import com.autogenie.inhaleexhale.core.util.toColor
 import com.autogenie.inhaleexhale.data.trainings.domain.model.Category
+import com.autogenie.inhaleexhale.feature.commonui.AmbientBackground
 import com.autogenie.inhaleexhale.feature.home.HomeViewModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -62,56 +68,61 @@ fun HomeScreen(
     val uiState by viewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
 
-    val primaryColor =
-        uiState.trainings.firstOrNull()?.color?.toColor() ?: MaterialTheme.colorScheme.primary
+    val primaryColor = uiState.trainings.firstOrNull()?.color?.toColor()
+        ?: MaterialTheme.colorScheme.primary
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        topBar = {
-            MinimalFloatingTopBar(
-                title = "Inhale - Exhale",
-                onSettingsClick = onSettingsClick
-            )
-        }
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
-            FloatingGetStartedAction(primaryColor = primaryColor, onClick = onGetStartedClick)
+    Box(modifier = Modifier.fillMaxSize()) {
+        AmbientBackground(primaryColor = primaryColor)
 
-            MoodGoalSelectionRow(
-                categories = uiState.moodCategories,
-                selectedCategory = uiState.selectedCategory,
-                onCategoryClick = onCategoryClick
-            )
-
-            SectionTitle(title = "Breathing Flow", modifier = Modifier.padding(top = 16.dp))
-
-            Row(
+        Scaffold(
+            modifier = Modifier.fillMaxSize(),
+            containerColor = Color.Transparent,
+            topBar = {
+                MinimalFloatingTopBar(
+                    title = "Inhale - Exhale",
+                    onSettingsClick = onSettingsClick
+                )
+            }
+        ) { paddingValues ->
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .horizontalScroll(scrollState)
-                    .padding(vertical = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .verticalScroll(rememberScrollState())
             ) {
-                Spacer(modifier = Modifier.width(24.dp - 16.dp))
+                FloatingGetStartedAction(primaryColor = primaryColor, onClick = onGetStartedClick)
 
-                uiState.trainings.forEach { training ->
-                    FlowExerciseCard(
-                        title = training.training.name,
-                        description = training.training.summary,
-                        color = training.color.toColor(),
-                        onClick = { onExerciseClick(training.training.id) }
-                    )
+                MoodGoalSelectionRow(
+                    categories = uiState.moodCategories,
+                    selectedCategory = uiState.selectedCategory,
+                    onCategoryClick = onCategoryClick
+                )
+
+                SectionTitle(title = "Breathing Flow", modifier = Modifier.padding(top = 16.dp))
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(scrollState)
+                        .padding(vertical = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                ) {
+                    Spacer(modifier = Modifier.width(24.dp - 16.dp))
+
+                    uiState.trainings.forEach { training ->
+                        FlowExerciseCard(
+                            title = training.training.name,
+                            description = training.training.summary,
+                            color = training.color.toColor(),
+                            onClick = { onExerciseClick(training.training.id) }
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(24.dp - 16.dp))
                 }
 
-                Spacer(modifier = Modifier.width(24.dp - 16.dp))
+                Spacer(modifier = Modifier.height(32.dp))
             }
-
-
-            Spacer(modifier = Modifier.height(32.dp))
         }
     }
 }
