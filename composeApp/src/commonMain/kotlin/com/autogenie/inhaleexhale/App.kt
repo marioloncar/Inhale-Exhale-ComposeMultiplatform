@@ -65,6 +65,7 @@ fun AppNavigation() {
                 onExerciseClick = { id -> navController.navigate("exercise/$id") },
                 onSettingsClick = { navController.navigate("settings") },
                 onGetStartedClick = { navController.navigate("tutorial") },
+                onCategoryClick = { viewModel.onCategoryClicked(it) }
             )
         }
 

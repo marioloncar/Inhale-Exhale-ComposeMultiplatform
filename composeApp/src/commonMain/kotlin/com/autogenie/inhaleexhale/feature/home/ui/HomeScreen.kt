@@ -18,7 +18,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.Book
+import androidx.compose.material.icons.filled.Healing
+import androidx.compose.material.icons.filled.Nightlight
+import androidx.compose.material.icons.filled.SelfImprovement
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -42,6 +46,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.autogenie.inhaleexhale.AppContainer
 import com.autogenie.inhaleexhale.core.util.toColor
+import com.autogenie.inhaleexhale.data.trainings.domain.model.Category
 import com.autogenie.inhaleexhale.feature.home.HomeViewModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -52,11 +57,13 @@ fun HomeScreen(
     onExerciseClick: (String) -> Unit,
     onSettingsClick: () -> Unit,
     onGetStartedClick: () -> Unit,
+    onCategoryClick: (Category) -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
 
-    val primaryColor = uiState.trainings.firstOrNull()?.color?.toColor() ?: MaterialTheme.colorScheme.primary
+    val primaryColor =
+        uiState.trainings.firstOrNull()?.color?.toColor() ?: MaterialTheme.colorScheme.primary
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -73,6 +80,12 @@ fun HomeScreen(
                 .padding(paddingValues)
         ) {
             FloatingGetStartedAction(primaryColor = primaryColor, onClick = onGetStartedClick)
+
+            MoodGoalSelectionRow(
+                categories = uiState.moodCategories,
+                selectedCategory = uiState.selectedCategory,
+                onCategoryClick = onCategoryClick
+            )
 
             SectionTitle(title = "Breathing Flow", modifier = Modifier.padding(top = 16.dp))
 
@@ -98,9 +111,93 @@ fun HomeScreen(
             }
 
 
-
             Spacer(modifier = Modifier.height(32.dp))
         }
+    }
+}
+
+@Composable
+fun GoalChip(
+    category: Category,
+    isSelected: Boolean,
+    onClick: (Category) -> Unit
+) {
+    val backgroundColor = if (isSelected) {
+        MaterialTheme.colorScheme.primary
+    } else {
+        MaterialTheme.colorScheme.surfaceVariant
+    }
+
+    val contentColor = if (isSelected) {
+        MaterialTheme.colorScheme.onPrimary
+    } else {
+        MaterialTheme.colorScheme.onSurfaceVariant
+    }
+
+    Row(
+        modifier = Modifier
+            .clickable { onClick(category) }
+            .background(
+                color = backgroundColor,
+                shape = CircleShape
+            )
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        val icon = when (category) {
+            Category.Sleep -> Icons.Default.Nightlight
+            Category.StressRelief -> Icons.Default.Healing
+            Category.Focus -> Icons.Default.SelfImprovement
+            Category.Energy -> Icons.Default.Bolt
+            Category.QuickBreak -> Icons.Default.Book
+        }
+
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            modifier = Modifier.size(20.dp),
+            tint = contentColor
+        )
+        Text(
+            text = category.name,
+            style = MaterialTheme.typography.labelLarge,
+            fontWeight = FontWeight.Medium,
+            color = contentColor
+        )
+    }
+}
+
+@Composable
+fun MoodGoalSelectionRow(
+    categories: List<Category>,
+    selectedCategory: Category?,
+    onCategoryClick: (Category) -> Unit
+) {
+    SectionTitle(title = "Breathe for Your Mood")
+
+    val scrollState = rememberScrollState()
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .horizontalScroll(scrollState)
+            .padding(bottom = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Spacer(modifier = Modifier.width(16.dp))
+
+        categories.forEach { category ->
+            val isSelected = category == selectedCategory
+            GoalChip(
+                category = category,
+                isSelected = isSelected,
+                onClick = onCategoryClick
+            )
+        }
+
+        Spacer(modifier = Modifier.width(16.dp))
     }
 }
 
@@ -152,7 +249,10 @@ fun FloatingGetStartedAction(primaryColor: Color, onClick: () -> Unit) {
                 .fillMaxWidth()
                 .background(
                     brush = Brush.linearGradient(
-                        colors = listOf(primaryColor.copy(alpha = 0.95f), primaryColor.copy(alpha = 0.7f))
+                        colors = listOf(
+                            primaryColor.copy(alpha = 0.95f),
+                            primaryColor.copy(alpha = 0.7f)
+                        )
                     )
                 )
                 .padding(20.dp)
@@ -270,6 +370,7 @@ fun HomeScreenPreview() {
         ),
         onExerciseClick = {},
         onSettingsClick = {},
-        onGetStartedClick = {}
+        onGetStartedClick = {},
+        onCategoryClick = {}
     )
 }
