@@ -49,6 +49,7 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.autogenie.inhaleexhale.core.util.KeepScreenOn
 import com.autogenie.inhaleexhale.core.util.TTS
 import com.autogenie.inhaleexhale.core.util.toColor
 import com.autogenie.inhaleexhale.data.trainings.domain.model.StepType
@@ -64,6 +65,8 @@ fun ExerciseScreen(
     viewModel: ExerciseViewModel,
     onBackClick: () -> Unit
 ) {
+    KeepScreenOn()
+
     LaunchedEffect(exerciseId) { viewModel.loadExercise(exerciseId) }
 
     val haptics = LocalHapticFeedback.current
