@@ -37,13 +37,6 @@ It guides users through inhale, exhale, and hold cycles using smooth animations,
 - **Compose Canvas animations**
 - **Haptic feedback + TTS**
 
-## iOS 
-
-https://github.com/user-attachments/assets/bf69fba9-515b-4537-ab40-555967127a8f
-
-
-## Android
-
-[android-inhale-exhale.webm](https://github.com/user-attachments/assets/2cb80086-c69d-49a5-b7b0-6a4f2a44b586)
+[inhale-exhale.webm](https://github.com/user-attachments/assets/7f0382ee-6b16-4a26-b681-6d19f38ce1af)
 
 
