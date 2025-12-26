@@ -37,6 +37,5 @@ It guides users through inhale, exhale, and hold cycles using smooth animations,
 - **Compose Canvas animations**
 - **Haptic feedback + TTS**
 
-[inhale-exhale.webm](https://github.com/user-attachments/assets/7f0382ee-6b16-4a26-b681-6d19f38ce1af)
-
+[Screen_recording_20251226_155956.webm](https://github.com/user-attachments/assets/6ee7ffbd-9cb8-4f51-8ab1-5fa7e43e09e7)
 
